@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Solido\PatchManager\JSONPointer\Helper;
 
+use Doctrine\Persistence\Proxy as PersistenceProxy;
+use Doctrine\Common\Persistence\Proxy as CommonProxy;
+use ProxyManager\Proxy\ProxyInterface;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
@@ -39,6 +42,13 @@ final class AccessHelper
     public function __construct(string $class, string $property)
     {
         $this->reflectionClass = new ReflectionClass($class);
+        if (
+            $this->reflectionClass->implementsInterface(ProxyInterface::class) ||
+            $this->reflectionClass->implementsInterface(PersistenceProxy::class) ||
+            $this->reflectionClass->implementsInterface(CommonProxy::class)
+        ) {
+            $this->reflectionClass = $this->reflectionClass->getParentClass();
+        }
 
         $this->property = $property;
         $this->camelized = self::camelize($property);
@@ -87,6 +97,15 @@ final class AccessHelper
                 Accessor::ACCESS_HAS_PROPERTY => true,
                 Accessor::ACCESS_TYPE => Accessor::ACCESS_TYPE_PROPERTY,
                 Accessor::ACCESS_NAME => $this->reflectionProperty->name,
+                Accessor::ACCESS_REF => true,
+            ];
+        }
+
+        if ($this->reflectionClass->hasProperty($this->camelized) && $this->reflectionClass->getProperty($this->camelized)->isPublic()) {
+            return [
+                Accessor::ACCESS_HAS_PROPERTY => true,
+                Accessor::ACCESS_TYPE => Accessor::ACCESS_TYPE_PROPERTY,
+                Accessor::ACCESS_NAME => $this->camelized,
                 Accessor::ACCESS_REF => true,
             ];
         }

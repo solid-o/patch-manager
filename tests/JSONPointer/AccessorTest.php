@@ -4,6 +4,8 @@ namespace Solido\PatchManager\Tests\JSONPointer;
 
 use Solido\PatchManager\JSONPointer\Accessor;
 use Solido\PatchManager\JSONPointer\Path;
+use Solido\PatchManager\Tests\Fixtures\JSONPointer\CamelizedPropertyClass;
+use Solido\PatchManager\Tests\Fixtures\JSONPointer\CamelizedPropertyProxy;
 use Solido\PatchManager\Tests\Fixtures\JSONPointer\TestClass;
 use Solido\PatchManager\Tests\Fixtures\JSONPointer\TestClassIsWritable;
 use Solido\PatchManager\Tests\Fixtures\JSONPointer\TestClassMagicGet;
@@ -452,6 +454,47 @@ class AccessorTest extends TestCase
     public function testIsWritableForReferenceChainIssue($object, string $path, $value): void
     {
         self::assertEquals($value, $this->propertyAccessor->isWritable($object, $path));
+    }
+
+    public function getCamelizedReadValue(): iterable
+    {
+        return [
+            [new CamelizedPropertyClass('value'), '/camelized_property_value', 'value'],
+            [new CamelizedPropertyClass(new CamelizedPropertyClass('double_value')), '/camelized_property_value/camelized_property_value', 'double_value'],
+            [['a' => ['b' => new CamelizedPropertyClass('double_value')]], '/a/b/camelized_property_value', 'double_value'],
+            [new CamelizedPropertyProxy('value'), '/camelized_property_value', 'value'],
+            [new CamelizedPropertyProxy(new CamelizedPropertyProxy('double_value')), '/camelized_property_value/camelized_property_value', 'double_value'],
+            [['a' => ['b' => new CamelizedPropertyProxy('double_value')]], '/a/b/camelized_property_value', 'double_value'],
+        ];
+    }
+
+    /**
+     * @dataProvider getCamelizedReadValue
+     */
+    public function testShouldReadFromCamelizedProperty($object, string $path, $value): void
+    {
+        self::assertEquals($value, $this->propertyAccessor->getValue($object, $path));
+    }
+
+    public function getCamelizedWriteValue(): iterable
+    {
+        return [
+            [new CamelizedPropertyClass('old_value'), '/camelized_property_value', 'value'],
+            [new CamelizedPropertyClass(new CamelizedPropertyClass('old_double_value')), '/camelized_property_value/camelized_property_value', 'double_value'],
+            [['a' => ['b' => new CamelizedPropertyClass('old_array_value')]], '/a/b/camelized_property_value', 'value_value'],
+            [new CamelizedPropertyProxy('old_value'), '/camelized_property_value', 'value'],
+            [new CamelizedPropertyProxy(new CamelizedPropertyProxy('old_double_value')), '/camelized_property_value/camelized_property_value', 'double_value'],
+            [['a' => ['b' => new CamelizedPropertyProxy('old_array_value')]], '/a/b/camelized_property_value', 'value_value'],
+        ];
+    }
+
+    /**
+     * @dataProvider getCamelizedWriteValue
+     */
+    public function testShouldWriteIntoCamelizedProperty($object, string $path, $value): void
+    {
+        $this->propertyAccessor->setValue($object, $path, $value);
+        self::assertEquals($value, $this->propertyAccessor->getValue($object, $path));
     }
 
     public function testThrowTypeError(): void

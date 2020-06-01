@@ -11,7 +11,6 @@ use Solido\PatchManager\Exception\FormInvalidException;
 use Solido\PatchManager\Exception\FormNotSubmittedException;
 use Solido\PatchManager\Exception\InvalidJSONException;
 use Solido\PatchManager\Exception\OperationNotAllowedException;
-use Solido\PatchManager\Exception\TypeError;
 use Solido\PatchManager\Exception\UnmergeablePatchException;
 use Solido\PatchManager\JSONPointer\Path;
 use Symfony\Component\Form\Exception\TransformationFailedException;
@@ -46,15 +45,8 @@ class PatchManager implements PatchManagerInterface
         $this->operationsFactory = new OperationFactory();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function patch($patchable, Request $request): void
+    public function patch(PatchableInterface $patchable, Request $request): void
     {
-        if (! $patchable instanceof PatchableInterface) {
-            throw TypeError::createArgumentInvalid(1, __METHOD__, PatchableInterface::class, $patchable);
-        }
-
         if (preg_match('#application/merge-patch\\+json#i', (string) $request->headers->get('Content-Type', ''))) {
             if (! $patchable instanceof MergeablePatchableInterface) {
                 throw new UnmergeablePatchException('Resource cannot be merge patched.');

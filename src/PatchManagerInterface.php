@@ -15,12 +15,10 @@ interface PatchManagerInterface
     /**
      * Executes the PATCH operations.
      *
-     * @param PatchableInterface $patchable
-     *
      * @throws TypeError
      * @throws InvalidJSONException
      * @throws FormInvalidException
      * @throws FormNotSubmittedException
      */
-    public function patch($patchable, Request $request): void;
+    public function patch(PatchableInterface $patchable, Request $request): void;
 }

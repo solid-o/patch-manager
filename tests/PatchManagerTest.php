@@ -65,6 +65,13 @@ class PatchManagerTest extends TestCase
         $this->patchManager = $this->createPatchManager();
     }
 
+    public function testPatchManagerCouldBeCreatedWithoutArguments(): void
+    {
+        $this->expectNotToPerformAssertions();
+
+        new PatchManager();
+    }
+
     public function testPatchShouldRaiseAnErrorIfNotImplementingPatchInterface(): void
     {
         $this->expectException(\TypeError::class);

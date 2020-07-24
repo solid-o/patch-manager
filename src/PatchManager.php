@@ -15,10 +15,12 @@ use Solido\PatchManager\Exception\UnmergeablePatchException;
 use Solido\PatchManager\JSONPointer\Path;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\Forms;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyPath;
+use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use function array_unique;
 use function assert;
@@ -38,8 +40,24 @@ class PatchManager implements PatchManagerInterface
     private OperationFactory $operationsFactory;
     protected ?CacheItemPoolInterface $cache;
 
-    public function __construct(FormFactoryInterface $formFactory, ValidatorInterface $validator)
+    public function __construct(?FormFactoryInterface $formFactory = null, ?ValidatorInterface $validator = null)
     {
+        if (null === $formFactory) {
+            if (! class_exists(Forms::class)) {
+                throw new \Exception('Symfony form component is not installed. Run composer require symfony/form to install it.');
+            }
+
+            $formFactory = Forms::createFormFactory();
+        }
+
+        if (null === $validator) {
+            if (! class_exists(Validation::class)) {
+                throw new \Exception('Symfony validator component is not installed. Run composer require symfony/validator to install it.');
+            }
+
+            $validator = Validation::createValidator();
+        }
+
         $this->formFactory = $formFactory;
         $this->validator = $validator;
         $this->operationsFactory = new OperationFactory();

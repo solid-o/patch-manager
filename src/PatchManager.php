@@ -7,6 +7,7 @@ namespace Solido\PatchManager;
 use JsonSchema\Validator;
 use Psr\Cache\CacheItemPoolInterface;
 use Solido\Common\Form\AutoSubmitRequestHandler;
+use Solido\PatchManager\Exception\Error;
 use Solido\PatchManager\Exception\FormInvalidException;
 use Solido\PatchManager\Exception\FormNotSubmittedException;
 use Solido\PatchManager\Exception\InvalidJSONException;
@@ -24,6 +25,7 @@ use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use function array_unique;
 use function assert;
+use function class_exists;
 use function count;
 use function in_array;
 use function json_decode;
@@ -42,17 +44,17 @@ class PatchManager implements PatchManagerInterface
 
     public function __construct(?FormFactoryInterface $formFactory = null, ?ValidatorInterface $validator = null)
     {
-        if (null === $formFactory) {
+        if ($formFactory === null) {
             if (! class_exists(Forms::class)) {
-                throw new \Exception('Symfony form component is not installed. Run composer require symfony/form to install it.');
+                throw new Error('Symfony form component is not installed. Run composer require symfony/form to install it.');
             }
 
             $formFactory = Forms::createFormFactory();
         }
 
-        if (null === $validator) {
+        if ($validator === null) {
             if (! class_exists(Validation::class)) {
-                throw new \Exception('Symfony validator component is not installed. Run composer require symfony/validator to install it.');
+                throw new Error('Symfony validator component is not installed. Run composer require symfony/validator to install it.');
             }
 
             $validator = Validation::createValidator();

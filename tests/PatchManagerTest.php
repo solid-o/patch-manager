@@ -78,7 +78,17 @@ class PatchManagerTest extends TestCase
         $this->patchManager->patch(new \stdClass(), $this->prophesize(Request::class)->reveal());
     }
 
-    public function testPatchShouldOperateMergePatchIfContentTypeIsCorrect(): void
+    public function provideMergePatchContentType(): iterable
+    {
+        yield [ 'application/merge-patch+json' ];
+        yield [ 'application/merge-patch+xml' ];
+        yield [ 'application/merge-patch+x-www-form-urlencoded' ];
+    }
+
+    /**
+     * @dataProvider provideMergePatchContentType
+     */
+    public function testPatchShouldOperateMergePatchIfContentTypeIsCorrect(string $contentType): void
     {
         $request = $this->prophesize(Request::class);
         $request->reveal()->headers = new HeaderBag([

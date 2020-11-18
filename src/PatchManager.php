@@ -67,7 +67,7 @@ class PatchManager implements PatchManagerInterface
 
     public function patch(PatchableInterface $patchable, Request $request): void
     {
-        if (preg_match('#application/merge-patch\\+json#i', (string) $request->headers->get('Content-Type', ''))) {
+        if (preg_match('#^application/merge-patch\\+#i', (string) $request->headers->get('Content-Type', ''))) {
             if (! $patchable instanceof MergeablePatchableInterface) {
                 throw new UnmergeablePatchException('Resource cannot be merge patched.');
             }

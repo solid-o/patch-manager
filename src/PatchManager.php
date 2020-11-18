@@ -23,6 +23,7 @@ use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyPath;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+
 use function array_unique;
 use function assert;
 use function class_exists;
@@ -33,6 +34,7 @@ use function json_encode;
 use function Safe\file_get_contents;
 use function Safe\preg_match;
 use function Safe\realpath;
+
 use const JSON_THROW_ON_ERROR;
 
 class PatchManager implements PatchManagerInterface

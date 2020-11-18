@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Solido\PatchManager\Operation;
 
 use Solido\PatchManager\Exception\InvalidJSONException;
+
 use function is_array;
 use function is_bool;
 use function is_object;
 use function json_decode;
 use function json_encode;
 use function Safe\ksort;
+
 use const JSON_THROW_ON_ERROR;
 
 class TestOperation extends AbstractOperation

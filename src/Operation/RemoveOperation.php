@@ -8,6 +8,7 @@ use ArrayAccess;
 use Solido\PatchManager\Exception\InvalidJSONException;
 use Solido\PatchManager\JSONPointer\Path;
 use Traversable;
+
 use function assert;
 use function is_array;
 use function iterator_to_array;

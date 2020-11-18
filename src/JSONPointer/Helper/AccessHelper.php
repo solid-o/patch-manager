@@ -13,6 +13,7 @@ use ReflectionProperty;
 use Solido\PatchManager\JSONPointer\Accessor;
 use Symfony\Component\Inflector\Inflector;
 use Traversable;
+
 use function array_map;
 use function assert;
 use function get_class;
@@ -43,9 +44,11 @@ final class AccessHelper
     public function __construct(string $class, string $property)
     {
         $this->reflectionClass = new ReflectionClass($class);
-        if ($this->reflectionClass->implementsInterface(ProxyInterface::class) ||
+        if (
+            $this->reflectionClass->implementsInterface(ProxyInterface::class) ||
             $this->reflectionClass->implementsInterface(PersistenceProxy::class) ||
-            $this->reflectionClass->implementsInterface(CommonProxy::class)) {
+            $this->reflectionClass->implementsInterface(CommonProxy::class)
+        ) {
             $reflectionClass = $this->reflectionClass->getParentClass();
             assert($reflectionClass !== false);
 

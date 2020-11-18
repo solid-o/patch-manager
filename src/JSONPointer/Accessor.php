@@ -17,6 +17,7 @@ use Symfony\Component\PropertyAccess\PropertyPathInterface;
 use Throwable;
 use Traversable;
 use TypeError;
+
 use function array_key_exists;
 use function count;
 use function get_class;
@@ -326,7 +327,8 @@ class Accessor implements PropertyAccessorInterface
 
             if ($zval[self::VALUE] instanceof ArrayAccess || is_array($zval[self::VALUE])) {
                 // Create missing nested arrays on demand
-                if (($zval[self::VALUE] instanceof ArrayAccess && ! $zval[self::VALUE]->offsetExists($property)) ||
+                if (
+                    ($zval[self::VALUE] instanceof ArrayAccess && ! $zval[self::VALUE]->offsetExists($property)) ||
                     (is_array($zval[self::VALUE]) && ! isset($zval[self::VALUE][$property]) && ! array_key_exists($property, $zval[self::VALUE]))
                 ) {
                     if ($i + 1 < $propertyPath->getLength()) {

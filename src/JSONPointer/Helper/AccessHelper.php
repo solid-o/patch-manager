@@ -19,6 +19,7 @@ use function assert;
 use function get_class;
 use function gettype;
 use function implode;
+use function interface_exists;
 use function is_array;
 use function is_object;
 use function lcfirst;
@@ -45,9 +46,9 @@ final class AccessHelper
     {
         $this->reflectionClass = new ReflectionClass($class);
         if (
-            $this->reflectionClass->implementsInterface(ProxyInterface::class) ||
-            $this->reflectionClass->implementsInterface(PersistenceProxy::class) ||
-            $this->reflectionClass->implementsInterface(CommonProxy::class)
+            (interface_exists(ProxyInterface::class) && $this->reflectionClass->implementsInterface(ProxyInterface::class)) ||
+            (interface_exists(PersistenceProxy::class) && $this->reflectionClass->implementsInterface(PersistenceProxy::class)) ||
+            (interface_exists(CommonProxy::class) && $this->reflectionClass->implementsInterface(CommonProxy::class))
         ) {
             $reflectionClass = $this->reflectionClass->getParentClass();
             assert($reflectionClass !== false);

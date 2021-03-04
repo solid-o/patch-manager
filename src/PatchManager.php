@@ -121,10 +121,8 @@ class PatchManager implements PatchManagerInterface
 
     /**
      * Gets the validation schema.
-     *
-     * @return object
      */
-    protected function getSchema()
+    protected function getSchema(): object
     {
         if ($this->cache !== null) {
             $item = $this->cache->getItem('patch_manager_schema');
@@ -133,7 +131,7 @@ class PatchManager implements PatchManagerInterface
             }
         }
 
-        $schema = json_decode(file_get_contents(realpath(__DIR__ . '/data/schema.json')), true, 512, JSON_THROW_ON_ERROR);
+        $schema = json_decode(file_get_contents(realpath(__DIR__ . '/data/schema.json')), false, 512, JSON_THROW_ON_ERROR);
 
         if (isset($item)) {
             assert($this->cache !== null);

@@ -2,6 +2,7 @@
 
 namespace Solido\PatchManager\Tests\JSONPointer;
 
+use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 
 class AccessorCollectionTest_Car
@@ -93,6 +94,8 @@ class AccessorCollectionTest_CarStructure
 
 abstract class AccessorCollectionTest extends AccessorArrayAccessTest
 {
+    use ProphecyTrait;
+
     public function testSetValueCallsAdderAndRemoverForCollections(): void
     {
         $axesBefore = $this->getContainer([1 => 'second', 3 => 'fourth', 4 => 'fifth']);
@@ -114,37 +117,19 @@ abstract class AccessorCollectionTest extends AccessorArrayAccessTest
 
     public function testSetValueCallsAdderAndRemoverForNestedCollections(): void
     {
-        $car = $this->getMockBuilder(__CLASS__.'_CompositeCar')->getMock();
-        $structure = $this->getMockBuilder(__CLASS__.'_CarStructure')->getMock();
+        $car = $this->prophesize(AccessorCollectionTest_CompositeCar::class);
+        $structure = $this->prophesize(AccessorCollectionTest_CarStructure::class);
         $axesBefore = $this->getContainer([1 => 'second', 3 => 'fourth']);
         $axesAfter = $this->getContainer([0 => 'first', 1 => 'second', 2 => 'third']);
 
-        $car
-            ->method('getStructure')
-            ->willReturn($structure)
-        ;
+        $car->getStructure()->willReturn($structure);
+        $structure->getAxes()->willReturn($axesBefore);
+        $structure->removeAxis('fourth')->shouldBeCalled();
+        $structure->addAxis('first')->shouldBeCalled();
+        $structure->addAxis('third')->shouldBeCalled();
 
-        $structure->expects(self::at(0))
-            ->method('getAxes')
-            ->willReturn($axesBefore)
-        ;
-
-        $structure->expects(self::at(1))
-            ->method('removeAxis')
-            ->with('fourth')
-        ;
-
-        $structure->expects(self::at(2))
-            ->method('addAxis')
-            ->with('first')
-        ;
-
-        $structure->expects(self::at(3))
-            ->method('addAxis')
-            ->with('third')
-        ;
-
-        $this->propertyAccessor->setValue($car, '/structure/axes', $axesAfter);
+        $carMock = $car->reveal();
+        $this->propertyAccessor->setValue($carMock, '/structure/axes', $axesAfter);
     }
 
     public function testSetValueFailsIfNoAdderNorRemoverFound(): void

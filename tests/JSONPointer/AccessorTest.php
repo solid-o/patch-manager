@@ -2,6 +2,7 @@
 
 namespace Solido\PatchManager\Tests\JSONPointer;
 
+use Prophecy\PhpUnit\ProphecyTrait;
 use Solido\PatchManager\JSONPointer\Accessor;
 use Solido\PatchManager\JSONPointer\Path;
 use Solido\PatchManager\Tests\Fixtures\JSONPointer\CamelizedPropertyClass;
@@ -21,6 +22,8 @@ use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 
 class AccessorTest extends TestCase
 {
+    use ProphecyTrait;
+
     private Accessor $propertyAccessor;
 
     /**
@@ -592,37 +595,18 @@ class AccessorTest extends TestCase
 
     public function testSetValueCallsAdderIfAppendFlagIsSpecified(): void
     {
-        $car = $this->getMockBuilder(AccessorCollectionTest_CompositeCar::class)->getMock();
-        $structure = $this->getMockBuilder(AccessorCollectionTest_CarStructure::class)->getMock();
+        $car = $this->prophesize(AccessorCollectionTest_CompositeCar::class);
+        $structure = $this->prophesize(AccessorCollectionTest_CarStructure::class);
         $axesBefore = (object) [0 => 'first', 1 => 'second'];
         $axesAfterOne = (object) [0 => 'first', 1 => 'second', 2 => 'third'];
 
-        $car->expects(self::any())
-            ->method('getStructure')
-            ->will(self::returnValue($structure))
-        ;
+        $car->getStructure()->willReturn($structure);
+        $structure->getAxes()->willReturn($axesBefore, $axesAfterOne);
+        $structure->addAxis('third')->shouldBeCalled();
+        $structure->addAxis('fourth')->shouldBeCalled();
 
-        $structure->expects(self::at(0))
-            ->method('getAxes')
-            ->will(self::returnValue($axesBefore))
-        ;
-
-        $structure->expects(self::at(1))
-            ->method('addAxis')
-            ->with('third')
-        ;
-
-        $structure->expects(self::at(2))
-            ->method('getAxes')
-            ->will(self::returnValue($axesAfterOne))
-        ;
-
-        $structure->expects(self::at(3))
-            ->method('addAxis')
-            ->with('fourth')
-        ;
-
-        $this->propertyAccessor->setValue($car, '/structure/axes/-', 'third');
-        $this->propertyAccessor->setValue($car, '/structure/axes/-', 'fourth');
+        $carMock = $car->reveal();
+        $this->propertyAccessor->setValue($carMock, '/structure/axes/-', 'third');
+        $this->propertyAccessor->setValue($carMock, '/structure/axes/-', 'fourth');
     }
 }

@@ -595,7 +595,7 @@ class Accessor implements PropertyAccessorInterface
     /**
      * Returns whether a property is writable in the given object.
      *
-     * @param object $object   The object to write to
+     * @param mixed $object The object to write to
      * @param string $property The property to write
      *
      * @return bool Whether the property is writable

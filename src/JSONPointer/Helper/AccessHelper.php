@@ -12,10 +12,13 @@ use ReflectionException;
 use ReflectionProperty;
 use Solido\PatchManager\JSONPointer\Accessor;
 use Symfony\Component\Inflector\Inflector;
+use Symfony\Component\String\Inflector\EnglishInflector;
+use Symfony\Component\String\Inflector\InflectorInterface;
 use Traversable;
 
 use function array_map;
 use function assert;
+use function class_exists;
 use function get_class;
 use function gettype;
 use function implode;
@@ -36,6 +39,9 @@ final class AccessHelper
     private ?ReflectionProperty $reflectionProperty;
     private string $property;
     private string $camelized;
+
+    /** @phpstan-var InflectorInterface */
+    private object $inflector;
 
     /**
      * @throws ReflectionException
@@ -65,6 +71,25 @@ final class AccessHelper
         } elseif ($this->reflectionClass->hasProperty($this->camelized)) {
             $this->reflectionProperty = $this->reflectionClass->getProperty($this->camelized);
         }
+
+        /** @phpstan-ignore-next-line */
+        $this->inflector = class_exists(EnglishInflector::class) ? new EnglishInflector() : new class {
+            /**
+             * @return string[]
+             */
+            public function singularize(string $plural): array
+            {
+                return (array) Inflector::singularize($plural);
+            }
+
+            /**
+             * @return string[]
+             */
+            public function pluralize(string $singular): array
+            {
+                return (array) Inflector::pluralize($singular);
+            }
+        };
     }
 
     /**
@@ -209,7 +234,7 @@ final class AccessHelper
                 $this->property,
                 implode('', array_map(static function ($singular) {
                     return '"add' . $singular . '()"/"remove' . $singular . '()", ';
-                }, (array) Inflector::singularize($this->camelized))),
+                }, $this->inflector->singularize($this->camelized))),
                 implode('()", "', $methods),
                 $this->reflectionClass->name
             ),
@@ -225,7 +250,7 @@ final class AccessHelper
      */
     private function findAdderAndRemover(): ?array
     {
-        $singulars = (array) Inflector::singularize($this->camelized);
+        $singulars = $this->inflector->singularize($this->camelized);
 
         foreach ($singulars as $singular) {
             $addMethod = 'add' . $singular;

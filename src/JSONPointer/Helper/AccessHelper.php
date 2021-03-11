@@ -10,6 +10,7 @@ use ProxyManager\Proxy\ProxyInterface;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
+use RuntimeException;
 use Solido\PatchManager\JSONPointer\Accessor;
 use Symfony\Component\Inflector\Inflector;
 use Symfony\Component\String\Inflector\EnglishInflector;
@@ -70,6 +71,10 @@ final class AccessHelper
             $this->reflectionProperty = $this->reflectionClass->getProperty($property);
         } elseif ($this->reflectionClass->hasProperty($this->camelized)) {
             $this->reflectionProperty = $this->reflectionClass->getProperty($this->camelized);
+        }
+
+        if (! class_exists(EnglishInflector::class) && ! class_exists(Inflector::class)) {
+            throw new RuntimeException('One of Symfony String or Symfony Inflector must be installed to make patch manager to work');
         }
 
         /** @phpstan-ignore-next-line */

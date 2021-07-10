@@ -453,9 +453,9 @@ class Accessor implements PropertyAccessorInterface
     /**
      * Guesses how to read the property value.
      *
-     * @return array<int, mixed>
-     *
      * @phpstan-param class-string $class
+     *
+     * @return array<int, mixed>
      */
     private function getReadAccessInfo(string $class, string $property): array
     {
@@ -566,10 +566,9 @@ class Accessor implements PropertyAccessorInterface
      * Guesses how to write the property value.
      *
      * @param mixed $value
+     * @phpstan-param class-string $class
      *
      * @return array<int, mixed>
-     *
-     * @phpstan-param class-string $class
      */
     private function getWriteAccessInfo(string $class, string $property, $value): array
     {

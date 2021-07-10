@@ -2,6 +2,7 @@
 
 namespace Solido\PatchManager\Tests;
 
+use Nyholm\Psr7\ServerRequest;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Solido\Common\Form\AutoSubmitRequestHandler;
 use Solido\PatchManager\Exception\FormInvalidException;
@@ -92,7 +93,7 @@ class PatchManagerTest extends TestCase
     {
         $request = $this->prophesize(Request::class);
         $request->reveal()->headers = new HeaderBag([
-            'content-type' => 'application/merge-patch+json',
+            'content-type' => $contentType,
         ]);
 
         $patchable = $this->prophesize(MergeablePatchableInterface::class);
@@ -260,6 +261,35 @@ class PatchManagerTest extends TestCase
         $request->reveal()->request = new ParameterBag($params);
 
         $this->patchManager->patch($object->reveal(), $request->reveal());
+
+        self::assertSame([
+            'b' => [
+                'b' => ['fooz', 'barz'],
+                'd' => 42,
+                'e' => 42,
+            ],
+        ], $object->reveal()->a);
+    }
+
+    public function testPatchShouldSupportPsr7ServerRequest(): void
+    {
+        $object = $this->prophesize(PatchableInterface::class);
+        $object->commit()->shouldBeCalled();
+
+        $object->reveal()->a = ['b' => ['c' => 'foo']];
+
+        $params = [
+            ['op' => 'test', 'path' => '/a/b/c', 'value' => 'foo'],
+            ['op' => 'remove', 'path' => '/a/b/c'],
+            ['op' => 'add', 'path' => '/a/b/c', 'value' => ['foo', 'bar']],
+            ['op' => 'add', 'path' => '/a/b/b', 'value' => ['fooz', 'barz']],
+            ['op' => 'replace', 'path' => '/a/b/c', 'value' => 42],
+            ['op' => 'move', 'from' => '/a/b/c', 'path' => '/a/b/d'],
+            ['op' => 'copy', 'from' => '/a/b/d', 'path' => '/a/b/e'],
+        ];
+
+        $request = (new ServerRequest('PATCH', '/'))->withParsedBody($params);
+        $this->patchManager->patch($object->reveal(), $request);
 
         self::assertSame([
             'b' => [

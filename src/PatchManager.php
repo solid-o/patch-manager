@@ -6,6 +6,8 @@ namespace Solido\PatchManager;
 
 use JsonSchema\Validator;
 use Psr\Cache\CacheItemPoolInterface;
+use Solido\Common\AdapterFactory;
+use Solido\Common\AdapterFactoryInterface;
 use Solido\Common\Form\AutoSubmitRequestHandler;
 use Solido\PatchManager\Exception\Error;
 use Solido\PatchManager\Exception\FormInvalidException;
@@ -17,7 +19,6 @@ use Solido\PatchManager\JSONPointer\Path;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\Forms;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyPath;
@@ -39,6 +40,7 @@ use const JSON_THROW_ON_ERROR;
 
 class PatchManager implements PatchManagerInterface
 {
+    private AdapterFactoryInterface $adapterFactory;
     private FormFactoryInterface $formFactory;
     private ValidatorInterface $validator;
     private OperationFactory $operationsFactory;
@@ -62,14 +64,21 @@ class PatchManager implements PatchManagerInterface
             $validator = Validation::createValidator();
         }
 
+        $this->adapterFactory = new AdapterFactory();
         $this->formFactory = $formFactory;
         $this->validator = $validator;
         $this->operationsFactory = new OperationFactory();
     }
 
-    public function patch(PatchableInterface $patchable, Request $request): void
+    public function setAdapterFactory(AdapterFactoryInterface $adapterFactory): void
     {
-        if (preg_match('#^application/merge-patch\\+#i', (string) $request->headers->get('Content-Type', ''))) {
+        $this->adapterFactory = $adapterFactory;
+    }
+
+    public function patch(PatchableInterface $patchable, object $request): void
+    {
+        $adapter = $this->adapterFactory->createRequestAdapter($request);
+        if (preg_match('#^application/merge-patch\\+#i', $adapter->getContentType())) {
             if (! $patchable instanceof MergeablePatchableInterface) {
                 throw new UnmergeablePatchException('Resource cannot be merge patched.');
             }
@@ -79,7 +88,7 @@ class PatchManager implements PatchManagerInterface
             return;
         }
 
-        $object = (array) Validator::arrayToObjectRecursive($request->request->all());
+        $object = (array) Validator::arrayToObjectRecursive($adapter->getRequestParams());
 
         $validator = new Validator();
         $validator->validate($object, $this->getSchema());
@@ -157,11 +166,9 @@ class PatchManager implements PatchManagerInterface
      * @throws FormInvalidException
      * @throws FormNotSubmittedException
      */
-    protected function mergePatch(MergeablePatchableInterface $patchable, Request $request): void
+    protected function mergePatch(MergeablePatchableInterface $patchable, object $request): void
     {
-        $builder = $this->formFactory->createNamedBuilder('', $patchable->getTypeClass(), $patchable, [
-            'method' => Request::METHOD_PATCH,
-        ]);
+        $builder = $this->formFactory->createNamedBuilder('', $patchable->getTypeClass(), $patchable, ['method' => 'PATCH']);
 
         $builder->setRequestHandler(new AutoSubmitRequestHandler());
 

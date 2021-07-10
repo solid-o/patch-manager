@@ -8,7 +8,6 @@ use Solido\PatchManager\Exception\FormInvalidException;
 use Solido\PatchManager\Exception\FormNotSubmittedException;
 use Solido\PatchManager\Exception\InvalidJSONException;
 use Solido\PatchManager\Exception\TypeError;
-use Symfony\Component\HttpFoundation\Request;
 
 interface PatchManagerInterface
 {
@@ -20,5 +19,5 @@ interface PatchManagerInterface
      * @throws FormInvalidException
      * @throws FormNotSubmittedException
      */
-    public function patch(PatchableInterface $patchable, Request $request): void;
+    public function patch(PatchableInterface $patchable, object $request): void;
 }

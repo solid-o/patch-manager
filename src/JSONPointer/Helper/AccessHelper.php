@@ -45,9 +45,9 @@ final class AccessHelper
     private object $inflector;
 
     /**
-     * @throws ReflectionException
-     *
      * @phpstan-param class-string $class
+     *
+     * @throws ReflectionException
      */
     public function __construct(string $class, string $property)
     {
@@ -250,7 +250,6 @@ final class AccessHelper
      * Searches for add and remove methods.
      *
      * @return array<string>|null An array containing the adder and remover when found, null otherwise
-     *
      * @phpstan-return array{string, string}|null
      */
     private function findAdderAndRemover(): ?array

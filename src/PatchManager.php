@@ -8,17 +8,14 @@ use JsonSchema\Validator;
 use Psr\Cache\CacheItemPoolInterface;
 use Solido\Common\AdapterFactory;
 use Solido\Common\AdapterFactoryInterface;
-use Solido\Common\Form\AutoSubmitRequestHandler;
+use Solido\DataMapper\Exception\MappingErrorException;
+use Solido\DataTransformers\Exception\TransformationFailedException;
 use Solido\PatchManager\Exception\Error;
-use Solido\PatchManager\Exception\FormInvalidException;
-use Solido\PatchManager\Exception\FormNotSubmittedException;
 use Solido\PatchManager\Exception\InvalidJSONException;
 use Solido\PatchManager\Exception\OperationNotAllowedException;
 use Solido\PatchManager\Exception\UnmergeablePatchException;
 use Solido\PatchManager\JSONPointer\Path;
-use Symfony\Component\Form\Exception\TransformationFailedException;
-use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\Form\Forms;
+use Symfony\Component\Form\Exception\TransformationFailedException as FormTransformationFailedException;
 use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyPath;
@@ -41,21 +38,12 @@ use const JSON_THROW_ON_ERROR;
 class PatchManager implements PatchManagerInterface
 {
     private AdapterFactoryInterface $adapterFactory;
-    private FormFactoryInterface $formFactory;
     private ValidatorInterface $validator;
     private OperationFactory $operationsFactory;
     protected ?CacheItemPoolInterface $cache;
 
-    public function __construct(?FormFactoryInterface $formFactory = null, ?ValidatorInterface $validator = null)
+    public function __construct(?ValidatorInterface $validator = null)
     {
-        if ($formFactory === null) {
-            if (! class_exists(Forms::class)) {
-                throw new Error('Symfony form component is not installed. Run composer require symfony/form to install it.');
-            }
-
-            $formFactory = Forms::createFormFactory();
-        }
-
         if ($validator === null) {
             if (! class_exists(Validation::class)) {
                 throw new Error('Symfony validator component is not installed. Run composer require symfony/validator to install it.');
@@ -65,7 +53,6 @@ class PatchManager implements PatchManagerInterface
         }
 
         $this->adapterFactory = new AdapterFactory();
-        $this->formFactory = $formFactory;
         $this->validator = $validator;
         $this->operationsFactory = new OperationFactory();
     }
@@ -79,7 +66,7 @@ class PatchManager implements PatchManagerInterface
     {
         $adapter = $this->adapterFactory->createRequestAdapter($request);
         if (preg_match('#^application/merge-patch\\+#i', $adapter->getContentType())) {
-            if (! $patchable instanceof MergeablePatchableInterface) {
+            if (! $patchable instanceof MergePatchableInterface) {
                 throw new UnmergeablePatchException('Resource cannot be merge patched.');
             }
 
@@ -108,7 +95,13 @@ class PatchManager implements PatchManagerInterface
 
             try {
                 $op->execute($patchable, $operation);
-            } catch (OperationNotAllowedException | NoSuchPropertyException | UnexpectedTypeException | TransformationFailedException $exception) {
+            } catch (
+                OperationNotAllowedException |
+                NoSuchPropertyException |
+                UnexpectedTypeException |
+                FormTransformationFailedException |
+                TransformationFailedException $exception
+            ) {
                 throw new InvalidJSONException('Operation failed at path "' . $operation->path . '"', 0, $exception);
             }
         }
@@ -163,25 +156,12 @@ class PatchManager implements PatchManagerInterface
     /**
      * Executes a merge-PATCH.
      *
-     * @throws FormInvalidException
-     * @throws FormNotSubmittedException
+     * @throws MappingErrorException
      */
-    protected function mergePatch(MergeablePatchableInterface $patchable, object $request): void
+    protected function mergePatch(MergePatchableInterface $patchable, object $request): void
     {
-        $builder = $this->formFactory->createNamedBuilder('', $patchable->getTypeClass(), $patchable, ['method' => 'PATCH']);
-
-        $builder->setRequestHandler(new AutoSubmitRequestHandler());
-
-        $form = $builder->getForm();
-        $form->handleRequest($request);
-        if (! $form->isSubmitted()) {
-            throw new FormNotSubmittedException($form);
-        }
-
-        if (! $form->isValid()) {
-            throw new FormInvalidException($form);
-        }
-
+        $mapper = $patchable->getDataMapper();
+        $mapper->map($request);
         $this->commit($patchable);
     }
 

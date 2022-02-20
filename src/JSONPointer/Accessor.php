@@ -32,6 +32,8 @@ use function str_replace;
 
 class Accessor implements PropertyAccessorInterface
 {
+    use AccessorTrait;
+
     /**
      * @internal
      */
@@ -220,9 +222,9 @@ class Accessor implements PropertyAccessorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    public function getValue($objectOrArray, $propertyPath)
+    protected function doGetValue($objectOrArray, $propertyPath)
     {
         $propertyPath = $this->getPath($propertyPath);
 

@@ -164,6 +164,7 @@ class AccessorTest extends TestCase
 
     /**
      * @dataProvider getPathsWithUnexpectedType
+     * @requires PHP < 8.0
      */
     public function testGetValueThrowsExceptionIfNotObjectOrArray($objectOrArray, string $path): void
     {

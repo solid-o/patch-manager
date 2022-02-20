@@ -4,13 +4,13 @@ namespace Solido\PatchManager\Tests;
 
 use Nyholm\Psr7\ServerRequest;
 use Prophecy\PhpUnit\ProphecyTrait;
-use Solido\Common\Form\AutoSubmitRequestHandler;
-use Solido\PatchManager\Exception\FormInvalidException;
-use Solido\PatchManager\Exception\FormNotSubmittedException;
+use Solido\DataMapper\DataMapperInterface;
+use Solido\DataMapper\Exception\MappingErrorException;
+use Solido\DataMapper\MappingResultInterface;
 use Solido\PatchManager\Exception\InvalidJSONException;
 use Solido\PatchManager\Exception\OperationNotAllowedException;
 use Solido\PatchManager\Exception\UnmergeablePatchException;
-use Solido\PatchManager\MergeablePatchableInterface;
+use Solido\PatchManager\MergePatchableInterface;
 use Solido\PatchManager\PatchableInterface;
 use Solido\PatchManager\PatchManager;
 use Solido\PatchManager\PatchManagerInterface;
@@ -19,9 +19,6 @@ use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,11 +29,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class PatchManagerTest extends TestCase
 {
     use ProphecyTrait;
-
-    /**
-     * @var FormFactoryInterface|ObjectProphecy
-     */
-    private ObjectProphecy $formFactory;
 
     /**
      * @var ValidatorInterface|ObjectProphecy
@@ -59,7 +51,6 @@ class PatchManagerTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->formFactory = $this->prophesize(FormFactoryInterface::class);
         $this->validator = $this->prophesize(ValidatorInterface::class);
         $this->validator->validate(Argument::any())->willReturn(new ConstraintViolationList());
 
@@ -96,77 +87,44 @@ class PatchManagerTest extends TestCase
             'content-type' => $contentType,
         ]);
 
-        $patchable = $this->prophesize(MergeablePatchableInterface::class);
-        $patchable->getTypeClass()->willReturn('Test\\TestType');
+        $patchable = $this->prophesize(MergePatchableInterface::class);
+        $patchable->getDataMapper()->willReturn($mapper = $this->prophesize(DataMapperInterface::class));
         $patchable->commit()->shouldBeCalled();
 
-        $form = $this->prophesize(FormInterface::class);
-        $form->handleRequest($request)->willReturn();
-        $form->isSubmitted()->willReturn(true);
-        $form->isValid()->willReturn(true);
-
-        $builder = $this->prophesize(FormBuilderInterface::class);
-        $builder->setRequestHandler(Argument::type(AutoSubmitRequestHandler::class))->shouldBeCalled();
-        $builder->getForm()->willReturn($form);
-
-        $this->formFactory->createNamedBuilder('', 'Test\\TestType', $patchable, Argument::any())
-            ->shouldBeCalled()
-            ->willReturn($builder);
-
+        $mapper->map($request)->shouldBeCalled();
         $this->patchManager->patch($patchable->reveal(), $request->reveal());
     }
 
-    public function testMergePatchShouldThrowIfFormIsNotSubmitted(): void
+    public function testMergePatchShouldThrowIfDataIsNotValid(): void
     {
-        $this->expectException(FormNotSubmittedException::class);
+        $this->expectException(MappingErrorException::class);
         $request = $this->prophesize(Request::class);
         $request->reveal()->headers = new HeaderBag([
             'content-type' => 'application/merge-patch+json',
         ]);
 
-        $patchable = $this->prophesize(MergeablePatchableInterface::class);
-        $patchable->getTypeClass()->willReturn('Test\\TestType');
+        $patchable = $this->prophesize(MergePatchableInterface::class);
+        $patchable->getDataMapper()->willReturn($mapper = $this->prophesize(DataMapperInterface::class));
         $patchable->commit()->shouldNotBeCalled();
 
-        $form = $this->prophesize(FormInterface::class);
-        $form->handleRequest($request)->willReturn();
-        $form->isSubmitted()->willReturn(false);
+        $mapper->map($request)->willThrow(new MappingErrorException(
+            new class implements MappingResultInterface {
+                public function getName(): string
+                {
+                    return '';
+                }
 
-        $builder = $this->prophesize(FormBuilderInterface::class);
-        $builder->setRequestHandler(Argument::type(AutoSubmitRequestHandler::class))->shouldBeCalled();
-        $builder->getForm()->willReturn($form);
+                public function getChildren(): array
+                {
+                    return [];
+                }
 
-        $this->formFactory->createNamedBuilder('', 'Test\\TestType', $patchable, Argument::any())
-            ->shouldBeCalled()
-            ->willReturn($builder);
-
-        $this->patchManager->patch($patchable->reveal(), $request->reveal());
-    }
-
-    public function testMergePatchShouldThrowIfFormIsNotValid(): void
-    {
-        $this->expectException(FormInvalidException::class);
-        $request = $this->prophesize(Request::class);
-        $request->reveal()->headers = new HeaderBag([
-            'content-type' => 'application/merge-patch+json',
-        ]);
-
-        $patchable = $this->prophesize(MergeablePatchableInterface::class);
-        $patchable->getTypeClass()->willReturn('Test\\TestType');
-        $patchable->commit()->shouldNotBeCalled();
-
-        $form = $this->prophesize(FormInterface::class);
-        $form->handleRequest($request)->willReturn();
-        $form->isSubmitted()->willReturn(true);
-        $form->isValid()->willReturn(false);
-
-        $builder = $this->prophesize(FormBuilderInterface::class);
-        $builder->setRequestHandler(Argument::type(AutoSubmitRequestHandler::class))->shouldBeCalled();
-        $builder->getForm()->willReturn($form);
-
-        $this->formFactory->createNamedBuilder('', 'Test\\TestType', $patchable, Argument::any())
-            ->shouldBeCalled()
-            ->willReturn($builder);
+                public function getErrors(): array
+                {
+                    return ['err'];
+                }
+            }
+        ));
 
         $this->patchManager->patch($patchable->reveal(), $request->reveal());
     }
@@ -427,7 +385,7 @@ class PatchManagerTest extends TestCase
 
     protected function createPatchManager(): PatchManagerInterface
     {
-        $manager = new PatchManager($this->formFactory->reveal(), $this->validator->reveal());
+        $manager = new PatchManager($this->validator->reveal());
         $manager->setCache(self::$cache);
 
         return $manager;

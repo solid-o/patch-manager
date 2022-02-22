@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Solido\PatchManager\Operation;
 
+use stdClass;
+
+/**
+ * @extends AbstractOperation<stdClass>
+ */
 class MoveOperation extends AbstractOperation
 {
     /**

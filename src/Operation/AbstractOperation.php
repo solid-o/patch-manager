@@ -6,6 +6,10 @@ namespace Solido\PatchManager\Operation;
 
 use Solido\PatchManager\JSONPointer\Accessor;
 
+/**
+ * @template T
+ * @implements OperationInterface<T>
+ */
 abstract class AbstractOperation implements OperationInterface
 {
     protected Accessor $accessor;

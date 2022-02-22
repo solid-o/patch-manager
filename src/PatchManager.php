@@ -15,6 +15,7 @@ use Solido\PatchManager\Exception\InvalidJSONException;
 use Solido\PatchManager\Exception\OperationNotAllowedException;
 use Solido\PatchManager\Exception\UnmergeablePatchException;
 use Solido\PatchManager\JSONPointer\Path;
+use stdClass;
 use Symfony\Component\Form\Exception\TransformationFailedException as FormTransformationFailedException;
 use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
@@ -134,6 +135,7 @@ class PatchManager implements PatchManagerInterface
         }
 
         $schema = json_decode(file_get_contents(realpath(__DIR__ . '/data/schema.json')), false, 512, JSON_THROW_ON_ERROR);
+        assert($schema instanceof stdClass);
 
         if (isset($item)) {
             assert($this->cache !== null);
@@ -169,7 +171,7 @@ class PatchManager implements PatchManagerInterface
      * Calls the validator service and throws an InvalidJSONException
      * if the object is invalid.
      *
-     * @param mixed[] $operations
+     * @param stdClass[] $operations
      *
      * @throws InvalidJSONException
      */

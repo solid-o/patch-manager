@@ -15,7 +15,6 @@ use Solido\PatchManager\JSONPointer\Accessor;
 use Symfony\Component\Inflector\Inflector;
 use Symfony\Component\String\Inflector\EnglishInflector;
 use Symfony\Component\String\Inflector\InflectorInterface;
-use Traversable;
 
 use function array_map;
 use function assert;
@@ -24,7 +23,7 @@ use function get_class;
 use function gettype;
 use function implode;
 use function interface_exists;
-use function is_array;
+use function is_iterable;
 use function is_object;
 use function lcfirst;
 use function Safe\sprintf;
@@ -101,6 +100,7 @@ final class AccessHelper
      * Gets the read access information.
      *
      * @return array<int, mixed>
+     * @phpstan-return array{0: bool, 1: int, 2: string, 3?: bool, 4?: string, 5?: string}
      */
     public function getReadAccessInfo(): array
     {
@@ -165,12 +165,13 @@ final class AccessHelper
      * @param mixed $value
      *
      * @return array<int, mixed>
+     * @phpstan-return array{0: bool, 1: int, 2?: string, 3?: bool, 4?: string, 5?: string}
      */
     public function getWriteAccessInfo($value): array
     {
         $hasProperty = $this->reflectionProperty !== null;
 
-        if (is_array($value) || $value instanceof Traversable) {
+        if (is_iterable($value)) {
             $methods = $this->findAdderAndRemover();
 
             if ($methods !== null) {

@@ -9,13 +9,16 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
 use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 
+/**
+ * @template T
+ */
 interface OperationInterface
 {
     /**
      * Executes the operation.
      *
-     * @param object|array<mixed, mixed> $subject
-     * @param mixed $operation
+     * @param object | array<mixed, mixed> $subject
+     * @param T $operation
      *
      * @throws OperationNotAllowedException Must be thrown if the operation cannot be performed on the subject.
      * @throws NoSuchPropertyException Must be thrown if the path contains a non-existent property.

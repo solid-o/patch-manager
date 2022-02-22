@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace Solido\PatchManager\Operation;
 
 use Solido\PatchManager\Exception\InvalidJSONException;
+use stdClass;
 use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 
+/**
+ * @extends AbstractOperation<stdClass>
+ */
 class CopyOperation extends AbstractOperation
 {
     /**

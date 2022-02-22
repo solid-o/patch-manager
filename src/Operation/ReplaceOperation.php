@@ -6,8 +6,12 @@ namespace Solido\PatchManager\Operation;
 
 use Solido\PatchManager\Exception\InvalidJSONException;
 use Solido\PatchManager\JSONPointer\Path;
+use stdClass;
 use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 
+/**
+ * @extends AbstractOperation<stdClass>
+ */
 class ReplaceOperation extends AbstractOperation
 {
     /**

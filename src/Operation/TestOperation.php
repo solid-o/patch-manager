@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Solido\PatchManager\Operation;
 
 use Solido\PatchManager\Exception\InvalidJSONException;
+use stdClass;
 
 use function is_array;
 use function is_bool;
@@ -15,6 +16,9 @@ use function Safe\ksort;
 
 use const JSON_THROW_ON_ERROR;
 
+/**
+ * @extends AbstractOperation<stdClass>
+ */
 class TestOperation extends AbstractOperation
 {
     /**

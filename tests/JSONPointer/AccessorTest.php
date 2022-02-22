@@ -2,6 +2,7 @@
 
 namespace Solido\PatchManager\Tests\JSONPointer;
 
+use ArrayIterator;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Solido\PatchManager\JSONPointer\Accessor;
 use Solido\PatchManager\JSONPointer\Path;
@@ -429,7 +430,7 @@ class AccessorTest extends TestCase
             [new TestClassSetValue(new TestClassSetValue('old-value')), '/value/value', 'new-value'],
             [new TestClassSetValue(['a' => ['b' => ['c' => new TestClassSetValue('old-value')]]]), '/value/a/b/c/value', 'new-value'],
             [new TestClassSetValue(['a' => ['b' => 'old-value']]), '/value/a/b', 'new-value'],
-            [new \ArrayIterator(['a' => ['b' => ['c' => 'old-value']]]), '/a/b/c', 'new-value'],
+            [new ArrayIterator(['a' => ['b' => ['c' => 'old-value']]]), '/a/b/c', 'new-value'],
         ];
     }
 
@@ -447,7 +448,7 @@ class AccessorTest extends TestCase
     {
         return [
             [new TestClassIsWritable(['a' => ['b' => 'old-value']]), '/value/a/b', true],
-            [new TestClassIsWritable(new \ArrayIterator(['a' => ['b' => 'old-value']])), '/value/a/b', true],
+            [new TestClassIsWritable(new ArrayIterator(['a' => ['b' => 'old-value']])), '/value/a/b', true],
             [new TestClassIsWritable(['a' => ['b' => ['c' => new TestClassSetValue('old-value')]]]), '/value/a/b/c/value', true],
         ];
     }

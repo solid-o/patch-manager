@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Solido\PatchManager;
 
-use Solido\PatchManager\Exception\FormInvalidException;
-use Solido\PatchManager\Exception\FormNotSubmittedException;
+use Solido\DataMapper\Exception\MappingErrorException;
 use Solido\PatchManager\Exception\InvalidJSONException;
 use Solido\PatchManager\Exception\TypeError;
 
@@ -16,8 +15,7 @@ interface PatchManagerInterface
      *
      * @throws TypeError
      * @throws InvalidJSONException
-     * @throws FormInvalidException
-     * @throws FormNotSubmittedException
+     * @throws MappingErrorException
      */
     public function patch(PatchableInterface $patchable, object $request): void;
 }

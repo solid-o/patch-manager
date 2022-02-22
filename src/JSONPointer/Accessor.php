@@ -128,6 +128,10 @@ class Accessor implements PropertyAccessorInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @param array | object $objectOrArray
+     * @param string | PropertyPathInterface $propertyPath
+     * @param mixed $value
      */
     public function setValue(&$objectOrArray, $propertyPath, $value): void
     {
@@ -234,6 +238,9 @@ class Accessor implements PropertyAccessorInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @param array | object $objectOrArray
+     * @param string | PropertyPathInterface $propertyPath
      */
     public function isReadable($objectOrArray, $propertyPath): bool
     {
@@ -250,6 +257,9 @@ class Accessor implements PropertyAccessorInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @param array | object $objectOrArray
+     * @param string | PropertyPathInterface $propertyPath
      */
     public function isWritable($objectOrArray, $propertyPath): bool
     {

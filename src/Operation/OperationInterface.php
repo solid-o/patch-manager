@@ -10,9 +10,7 @@ use Symfony\Component\Form\Exception\TransformationFailedException as FormTransf
 use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 
-/**
- * @template T
- */
+/** @template T */
 interface OperationInterface
 {
     /**

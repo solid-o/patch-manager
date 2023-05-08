@@ -130,6 +130,7 @@ class PatchManager implements PatchManagerInterface
         if ($this->cache !== null) {
             $item = $this->cache->getItem('patch_manager_schema');
             if ($item->isHit()) {
+                // @phpstan-ignore-next-line
                 return $item->get();
             }
         }

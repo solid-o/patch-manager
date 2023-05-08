@@ -29,7 +29,7 @@ class TypeError extends \TypeError
             $no,
             $function,
             self::formatExpected($expected),
-            is_object($given) ? get_class($given) : gettype($given)
+            is_object($given) ? get_class($given) : gettype($given),
         );
 
         return new self($message);

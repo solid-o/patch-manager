@@ -43,9 +43,7 @@ class Path implements IteratorAggregate, PropertyPathInterface
         return '/' . implode('/', array_map(fn ($val) => $this->escape($val), $this->parts));
     }
 
-    /**
-     * @return Iterator<string>
-     */
+    /** @return Iterator<string> */
     public function getIterator(): Iterator
     {
         return new PropertyPathIterator($this);

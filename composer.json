@@ -53,6 +53,9 @@
         "symfony/string": "^4.4 || ^5.0 || ^6.0"
     },
     "autoload": {
+        "files": [
+            "bootstrap.php"
+        ],
         "psr-4": {
             "Solido\\PatchManager\\": "src/"
         }

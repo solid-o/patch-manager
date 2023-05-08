@@ -30,9 +30,7 @@ use function Safe\sprintf;
 use function str_replace;
 use function ucwords;
 
-/**
- * @internal
- */
+/** @internal */
 final class AccessHelper
 {
     private ReflectionClass $reflectionClass;
@@ -78,17 +76,13 @@ final class AccessHelper
 
         /** @phpstan-ignore-next-line */
         $this->inflector = class_exists(EnglishInflector::class) ? new EnglishInflector() : new class {
-            /**
-             * @return string[]
-             */
+            /** @return string[] */
             public function singularize(string $plural): array
             {
                 return (array) Inflector::singularize($plural);
             }
 
-            /**
-             * @return string[]
-             */
+            /** @return string[] */
             public function pluralize(string $singular): array
             {
                 return (array) Inflector::pluralize($singular);
@@ -154,7 +148,7 @@ final class AccessHelper
                 'exist and have public access in class "%s".',
                 $this->property,
                 implode('()", "', $methods),
-                $this->reflectionClass->name
+                $this->reflectionClass->name,
             ),
         ];
     }
@@ -226,7 +220,7 @@ final class AccessHelper
                     $this->property,
                     $this->reflectionClass->name,
                     implode('()", "', $adderRemover),
-                    is_object($value) ? get_class($value) : gettype($value)
+                    is_object($value) ? get_class($value) : gettype($value),
                 ),
             ];
         }
@@ -242,7 +236,7 @@ final class AccessHelper
                     return '"add' . $singular . '()"/"remove' . $singular . '()", ';
                 }, $this->inflector->singularize($this->camelized))),
                 implode('()", "', $methods),
-                $this->reflectionClass->name
+                $this->reflectionClass->name,
             ),
         ];
     }

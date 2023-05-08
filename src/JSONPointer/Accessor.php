@@ -40,69 +40,43 @@ class Accessor implements PropertyAccessorInterface
 {
     use AccessorTrait;
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public const ACCESS_HAS_PROPERTY = 0;
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public const ACCESS_TYPE = 1;
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public const ACCESS_NAME = 2;
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public const ACCESS_REF = 3;
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public const ACCESS_ADDER = 4;
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public const ACCESS_REMOVER = 5;
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public const ACCESS_TYPE_METHOD = 0;
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public const ACCESS_TYPE_PROPERTY = 1;
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public const ACCESS_TYPE_ADDER_AND_REMOVER = 3;
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public const ACCESS_TYPE_NOT_FOUND = 4;
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public const CACHE_PREFIX_READ = 'r';
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public const CACHE_PREFIX_WRITE = 'w';
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public const CACHE_PREFIX_PROPERTY_PATH = 'p';
 
     /**
@@ -172,12 +146,12 @@ class Accessor implements PropertyAccessorInterface
                     }
 
                     if ($appendToArray && $propertiesCount - 1 === $i) {
-                        $zval->reference[] = $value;
+                        $zval->reference[] = $value; // @phpstan-ignore-line
                         $appendToArray = false;
                     } elseif ($appendToArray && $propertiesCount - 2 === $i) {
                         throw new InvalidArgumentException('Cannot append to a non-array object');
                     } else {
-                        $zval->reference[$property] = $value;
+                        $zval->reference[$property] = $value; // @phpstan-ignore-line
                     }
 
                     if ($overwrite) {
@@ -190,6 +164,7 @@ class Accessor implements PropertyAccessorInterface
 
                     if ($appendToArray && $propertiesCount - 2 === $i) {
                         $object = $zval->value;
+                        assert(is_object($object));
                         $className = get_class($object);
                         assert($className !== false);
 
@@ -299,7 +274,7 @@ class Accessor implements PropertyAccessorInterface
 
         $item = $this->cacheItemPool->getItem(self::CACHE_PREFIX_PROPERTY_PATH . str_replace('/', '.', rawurlencode($propertyPath)));
         if ($item->isHit()) {
-            return $item->get();
+            return $item->get(); // @phpstan-ignore-line
         }
 
         $propertyPathInstance = new Path($propertyPath);
@@ -475,7 +450,7 @@ class Accessor implements PropertyAccessorInterface
 
         $item = $this->cacheItemPool->getItem(self::CACHE_PREFIX_READ . str_replace('\\', '.', $key));
         if ($item->isHit()) {
-            return $this->readPropertyCache[$key] = $item->get();
+            return $this->readPropertyCache[$key] = $item->get(); // @phpstan-ignore-line
         }
 
         $helper = new AccessHelper($class, $property);
@@ -595,7 +570,7 @@ class Accessor implements PropertyAccessorInterface
 
         $item = $this->cacheItemPool->getItem(self::CACHE_PREFIX_WRITE . str_replace('\\', '.', $key));
         if ($item->isHit()) {
-            return $this->writePropertyCache[$key] = $item->get();
+            return $this->writePropertyCache[$key] = $item->get(); // @phpstan-ignore-line
         }
 
         $helper = new AccessHelper($class, $property);

@@ -14,9 +14,7 @@ use function assert;
 use function is_array;
 use function iterator_to_array;
 
-/**
- * @extends AbstractOperation<stdClass>
- */
+/** @extends AbstractOperation<stdClass> */
 class RemoveOperation extends AbstractOperation
 {
     /**

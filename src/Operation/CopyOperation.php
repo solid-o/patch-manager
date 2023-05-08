@@ -8,9 +8,7 @@ use Solido\PatchManager\Exception\InvalidJSONException;
 use stdClass;
 use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 
-/**
- * @extends AbstractOperation<stdClass>
- */
+/** @extends AbstractOperation<stdClass> */
 class CopyOperation extends AbstractOperation
 {
     /**

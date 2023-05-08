@@ -16,9 +16,7 @@ use function Safe\ksort;
 
 use const JSON_THROW_ON_ERROR;
 
-/**
- * @extends AbstractOperation<stdClass>
- */
+/** @extends AbstractOperation<stdClass> */
 class TestOperation extends AbstractOperation
 {
     /**

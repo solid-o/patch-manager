@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Solido\PatchManager\JSONPointer\Helper;
 
-/**
- * @extends Value<object>
- */
+/** @extends Value<object> */
 class ObjectValue extends Value
 {
     /** @var object */

@@ -6,9 +6,7 @@ namespace Solido\PatchManager\Operation;
 
 use stdClass;
 
-/**
- * @extends AbstractOperation<stdClass>
- */
+/** @extends AbstractOperation<stdClass> */
 class MoveOperation extends AbstractOperation
 {
     /**

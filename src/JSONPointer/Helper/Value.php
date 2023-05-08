@@ -20,9 +20,7 @@ class Value
 
     public ?bool $isRefChained;
 
-    /**
-     * @param mixed $value
-     */
+    /** @param mixed $value */
     public static function create($value): self
     {
         if (is_array($value)) {

@@ -8,7 +8,7 @@ use Symfony\Component\PropertyAccess\PropertyPathInterface;
 
 // phpcs:disable Squiz.Classes.ClassFileName.NoMatch
 
-trait AccessorTrait
+trait AccessorTraitPhp80
 {
     public function getValue(object | array $objectOrArray, PropertyPathInterface | string $propertyPath): mixed
     {

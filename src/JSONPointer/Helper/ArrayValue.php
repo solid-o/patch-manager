@@ -11,5 +11,5 @@ class ArrayValue extends Value
     public $value; // phpcs:ignore SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
 
     /** @var array<array-key, mixed> */
-    public ?array $reference;
+    public $reference; // phpcs:ignore SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
 }

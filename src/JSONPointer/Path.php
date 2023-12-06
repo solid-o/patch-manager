@@ -17,10 +17,10 @@ use function count;
 use function explode;
 use function implode;
 use function Safe\preg_match;
-use function Safe\sprintf;
-use function Safe\substr;
+use function sprintf;
 use function str_replace;
 use function strpos;
+use function substr;
 use function urldecode;
 
 class Path implements IteratorAggregate, PropertyPathInterface
@@ -54,7 +54,7 @@ class Path implements IteratorAggregate, PropertyPathInterface
         return $this->length;
     }
 
-    public function getParent(): ?PropertyPathInterface
+    public function getParent(): PropertyPathInterface|null
     {
         if ($this->length <= 1) {
             return null;
@@ -68,7 +68,7 @@ class Path implements IteratorAggregate, PropertyPathInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getElements(): array
     {
@@ -76,7 +76,7 @@ class Path implements IteratorAggregate, PropertyPathInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getElement($index): string
     {
@@ -88,7 +88,7 @@ class Path implements IteratorAggregate, PropertyPathInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function isProperty($index): bool
     {
@@ -96,7 +96,7 @@ class Path implements IteratorAggregate, PropertyPathInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function isIndex($index): bool
     {
@@ -137,5 +137,10 @@ class Path implements IteratorAggregate, PropertyPathInterface
     private function escape(string $token): string
     {
         return str_replace(['~', '/'], ['~0', '~1'], $token);
+    }
+
+    public function isNullSafe(int $index): bool
+    {
+        return false;
     }
 }

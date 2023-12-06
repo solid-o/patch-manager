@@ -12,5 +12,5 @@ class ArrayAccessValue extends ObjectValue
     public $value; // phpcs:ignore SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
 
     /** @var ArrayAccess */
-    public ?object $reference;
+    public $reference; // phpcs:ignore SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
 }

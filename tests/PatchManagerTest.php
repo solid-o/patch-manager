@@ -20,6 +20,7 @@ use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\HttpFoundation\HeaderBag;
+use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\ConstraintViolation;
@@ -146,7 +147,7 @@ class PatchManagerTest extends TestCase
         $this->expectExceptionMessage('Invalid document.');
         $request = $this->prophesize(Request::class);
         $request->reveal()->headers = new HeaderBag();
-        $request->reveal()->request = new ParameterBag($params);
+        $request->reveal()->request = new InputBag($params);
 
         $patchable = $this->prophesize(PatchableInterface::class);
         $patchable->commit()->shouldNotBeCalled();
@@ -192,7 +193,7 @@ class PatchManagerTest extends TestCase
         $this->expectExceptionMessageMatches('/Operation failed at path/');
         $request = $this->prophesize(Request::class);
         $request->reveal()->headers = new HeaderBag();
-        $request->reveal()->request = new ParameterBag($params);
+        $request->reveal()->request = new InputBag($params);
 
         $this->patchManager->patch($object, $request->reveal());
     }
@@ -216,7 +217,7 @@ class PatchManagerTest extends TestCase
 
         $request = $this->prophesize(Request::class);
         $request->reveal()->headers = new HeaderBag();
-        $request->reveal()->request = new ParameterBag($params);
+        $request->reveal()->request = new InputBag($params);
 
         $this->patchManager->patch($object->reveal(), $request->reveal());
 
@@ -273,7 +274,7 @@ class PatchManagerTest extends TestCase
 
         $request = $this->prophesize(Request::class);
         $request->reveal()->headers = new HeaderBag();
-        $request->reveal()->request = new ParameterBag([
+        $request->reveal()->request = new InputBag([
             ['op' => 'test', 'path' => '/a/b/c', 'value' => 'foo'],
         ]);
 
@@ -295,7 +296,7 @@ class PatchManagerTest extends TestCase
 
         $request = $this->prophesize(Request::class);
         $request->reveal()->headers = new HeaderBag();
-        $request->reveal()->request = new ParameterBag([
+        $request->reveal()->request = new InputBag([
             ['op' => 'test', 'path' => '/a/b/c', 'value' => 'foo'],
         ]);
 
@@ -316,7 +317,7 @@ class PatchManagerTest extends TestCase
 
         $request = $this->prophesize(Request::class);
         $request->reveal()->headers = new HeaderBag();
-        $request->reveal()->request = new ParameterBag([
+        $request->reveal()->request = new InputBag([
             ['op' => 'test', 'path' => '/a/b/c', 'value' => 'foo'],
         ]);
 
@@ -364,7 +365,7 @@ class PatchManagerTest extends TestCase
 
         $request = $this->prophesize(Request::class);
         $request->reveal()->headers = new HeaderBag();
-        $request->reveal()->request = new ParameterBag($params);
+        $request->reveal()->request = new InputBag($params);
 
         $this->patchManager->patch($object, $request->reveal());
     }

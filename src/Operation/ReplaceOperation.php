@@ -13,7 +13,7 @@ use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 class ReplaceOperation extends AbstractOperation
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function execute(&$subject, $operation): void
     {
@@ -22,7 +22,7 @@ class ReplaceOperation extends AbstractOperation
 
         try {
             $value = $this->accessor->getValue($subject, $path);
-        } catch (NoSuchPropertyException $e) {
+        } catch (NoSuchPropertyException) {
             // @ignoreException
         }
 

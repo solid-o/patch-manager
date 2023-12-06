@@ -25,19 +25,18 @@
         "csfix": "vendor/bin/phpcbf --standard=Solido src/"
     },
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": "^8.1",
         "ext-json": "*",
         "justinrainbow/json-schema": "^5.2",
-        "solido/common": "^0.2 || ^0.3",
-        "solido/data-mapper": "^0.3",
-        "symfony/cache": "^4.4 || ^5.0 || ^6.0",
-        "symfony/http-foundation": "^4.4 || ^5.0 || ^6.0",
-        "symfony/polyfill-php80": "^1.10",
-        "symfony/property-access": "^4.4 || ^5.0 || ^6.0",
-        "symfony/validator": "^4.4 || ^5.0 || ^6.0"
+        "solido/common": "^0.3 || ^0.4",
+        "solido/data-mapper": "^0.4",
+        "symfony/cache": "^5.4 || ^6.0 || ^7.0",
+        "symfony/http-foundation": "^5.4 || ^6.0 || ^7.0",
+        "symfony/property-access": "^5.4 || ^6.0 || ^7.0",
+        "symfony/validator": "^5.4 || ^6.0 || ^7.0"
     },
     "require-dev": {
-        "doctrine/collections": "^1.6",
+        "doctrine/collections": "^1.0 || ^2.0 || ^3.0",
         "doctrine/common": "^2.10 || ^3.0",
         "doctrine/persistence": "^1.3 || ^2.0",
         "friendsofphp/proxy-manager-lts": "^1.0",
@@ -46,11 +45,11 @@
         "phpspec/prophecy-phpunit": "^2.0",
         "phpunit/phpunit": "^9.4",
         "roave/security-advisories": "dev-master",
-        "solido/data-transformers": "^0.2 || ^0.3",
+        "solido/data-transformers": "^0.4@dev",
         "solido/php-coding-standards": "dev-master",
-        "symfony/form": "^4.4 || ^5.0 || ^6.0",
-        "symfony/inflector": "^4.4 || ^5.0 || ^6.0",
-        "symfony/string": "^4.4 || ^5.0 || ^6.0"
+        "symfony/form": "^5.4 || ^6.0 || ^7.0",
+        "symfony/inflector": "^5.4 || ^6.0 || ^7.0",
+        "symfony/string": "^5.4 || ^6.0 || ^7.0"
     },
     "autoload": {
         "files": [
@@ -73,11 +72,11 @@
         }
     },
     "archive": {
-        "exclude": [ ".gitignore", ".travis.yml", "tests" ]
+        "exclude": [ ".gitignore", ".github", "tests" ]
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.3.x-dev"
+            "dev-master": "0.4.x-dev"
         }
     }
 }

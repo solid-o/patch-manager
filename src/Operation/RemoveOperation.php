@@ -18,7 +18,7 @@ use function iterator_to_array;
 class RemoveOperation extends AbstractOperation
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function execute(&$subject, $operation): void
     {

@@ -10,7 +10,7 @@ use stdClass;
 class AddOperation extends AbstractOperation
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function execute(&$subject, $operation): void
     {

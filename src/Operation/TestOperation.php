@@ -12,7 +12,7 @@ use function is_bool;
 use function is_object;
 use function json_decode;
 use function json_encode;
-use function Safe\ksort;
+use function ksort;
 
 use const JSON_THROW_ON_ERROR;
 
@@ -20,7 +20,7 @@ use const JSON_THROW_ON_ERROR;
 class TestOperation extends AbstractOperation
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function execute(&$subject, $operation): void
     {
@@ -31,11 +31,7 @@ class TestOperation extends AbstractOperation
         }
     }
 
-    /**
-     * @param mixed $objectValue
-     * @param mixed $value
-     */
-    private function isEqual($objectValue, $value): bool
+    private function isEqual(mixed $objectValue, mixed $value): bool
     {
         if ($value === 'true') {
             $value = true;

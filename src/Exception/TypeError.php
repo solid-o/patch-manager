@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Solido\PatchManager\Exception;
 
 use function array_pop;
-use function get_class;
 use function gettype;
 use function implode;
 use function is_array;
 use function is_object;
-use function Safe\sprintf;
+use function sprintf;
 
 class TypeError extends \TypeError
 {
@@ -22,14 +21,14 @@ class TypeError extends \TypeError
      * @param string|string[] $expected Expected type(s)
      * @param mixed           $given    Given value
      */
-    public static function createArgumentInvalid(int $no, string $function, $expected, $given): self
+    public static function createArgumentInvalid(int $no, string $function, string|array $expected, mixed $given): self
     {
         $message = sprintf(
             'Argument %u passed to %s must be of type %s, %s given',
             $no,
             $function,
             self::formatExpected($expected),
-            is_object($given) ? get_class($given) : gettype($given),
+            is_object($given) ? $given::class : gettype($given),
         );
 
         return new self($message);
@@ -40,7 +39,7 @@ class TypeError extends \TypeError
      *
      * @param string|string[] $expected
      */
-    private static function formatExpected($expected): string
+    private static function formatExpected(string|array $expected): string
     {
         if (! is_array($expected)) {
             return $expected;

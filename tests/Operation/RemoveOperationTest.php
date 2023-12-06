@@ -46,7 +46,7 @@ class RemoveOperationTest extends TestCase
     public function testShouldRemoveValueNestedIterable(): void
     {
         $iterable = new class() implements \IteratorAggregate {
-            public function getIterator()
+            public function getIterator(): \Traversable
             {
                 return new \ArrayIterator(['baz', 'two']);
             }

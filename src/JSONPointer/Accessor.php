@@ -25,7 +25,6 @@ use TypeError;
 use function array_key_exists;
 use function assert;
 use function count;
-use function get_class;
 use function in_array;
 use function is_array;
 use function is_iterable;
@@ -33,7 +32,7 @@ use function is_object;
 use function iterator_to_array;
 use function property_exists;
 use function rawurlencode;
-use function Safe\sprintf;
+use function sprintf;
 use function str_replace;
 
 class Accessor implements PropertyAccessorInterface
@@ -93,7 +92,7 @@ class Accessor implements PropertyAccessorInterface
 
     private CacheItemPoolInterface $cacheItemPool;
 
-    public function __construct(?CacheItemPoolInterface $cacheItemPool = null)
+    public function __construct(CacheItemPoolInterface|null $cacheItemPool = null)
     {
         $this->cacheItemPool = $cacheItemPool ?? new ArrayAdapter();
         $this->readPropertyCache = [];
@@ -101,7 +100,7 @@ class Accessor implements PropertyAccessorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @param array | object $objectOrArray
      * @param string | PropertyPathInterface $propertyPath
@@ -165,7 +164,7 @@ class Accessor implements PropertyAccessorInterface
                     if ($appendToArray && $propertiesCount - 2 === $i) {
                         $object = $zval->value;
                         assert(is_object($object));
-                        $className = get_class($object);
+                        $className = $object::class;
                         assert($className !== false);
 
                         $access = $this->getWriteAccessInfo($className, $property, [$value]);
@@ -197,13 +196,8 @@ class Accessor implements PropertyAccessorInterface
         }
     }
 
-    /**
-     * @param object | array<array-key, mixed> $objectOrArray
-     * @param PropertyPathInterface | string $propertyPath
-     *
-     * @return mixed
-     */
-    protected function doGetValue($objectOrArray, $propertyPath)
+    /** @param object | array<array-key, mixed> $objectOrArray */
+    protected function doGetValue(object|array $objectOrArray, PropertyPathInterface|string $propertyPath): mixed
     {
         $propertyPath = $this->getPath($propertyPath);
         $propertyValues = $this->readPropertiesUntil(Value::create($objectOrArray), $propertyPath, $propertyPath->getLength());
@@ -212,7 +206,7 @@ class Accessor implements PropertyAccessorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @param array | object $objectOrArray
      * @param string | PropertyPathInterface $propertyPath
@@ -225,13 +219,13 @@ class Accessor implements PropertyAccessorInterface
             $this->readPropertiesUntil(Value::create($objectOrArray), $propertyPath, $propertyPath->getLength());
 
             return true;
-        } catch (TypeError | UnexpectedTypeException | NoSuchPropertyException $e) {
+        } catch (TypeError | UnexpectedTypeException | NoSuchPropertyException) {
             return false;
         }
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @param array | object $objectOrArray
      * @param string | PropertyPathInterface $propertyPath
@@ -255,17 +249,15 @@ class Accessor implements PropertyAccessorInterface
             }
 
             return $zval instanceof ObjectValue;
-        } catch (TypeError | UnexpectedTypeException | NoSuchPropertyException $e) {
+        } catch (TypeError | UnexpectedTypeException | NoSuchPropertyException) {
             return false;
         }
     }
 
     /**
      * Gets a PropertyPath instance and caches it.
-     *
-     * @param string|PropertyPathInterface $propertyPath
      */
-    private function getPath($propertyPath): PropertyPathInterface
+    private function getPath(string|PropertyPathInterface $propertyPath): PropertyPathInterface
     {
         if ($propertyPath instanceof PropertyPathInterface) {
             // Don't call the copy constructor has it is not needed here
@@ -361,7 +353,7 @@ class Accessor implements PropertyAccessorInterface
      *
      * @throws NoSuchIndexException If the array does not implement \ArrayAccess or it is not an array.
      */
-    private function readIndex(Value $zval, $index): Value
+    private function readIndex(Value $zval, string|int $index): Value
     {
         if (isset($zval->value[$index])) {
             $result = Value::create($zval->value[$index]);
@@ -391,7 +383,7 @@ class Accessor implements PropertyAccessorInterface
     private function readProperty(ObjectValue $zval, string $property): Value
     {
         $object = $zval->value;
-        $access = $this->getReadAccessInfo(get_class($object), $property);
+        $access = $this->getReadAccessInfo($object::class, $property);
         $camelized = AccessHelper::camelize($property);
 
         if ($access[self::ACCESS_TYPE] === self::ACCESS_TYPE_METHOD) {
@@ -470,10 +462,10 @@ class Accessor implements PropertyAccessorInterface
      *
      * @throws NoSuchPropertyException if the property does not exist or is not public.
      */
-    private function writeProperty(ObjectValue $zval, string $property, $value): void
+    private function writeProperty(ObjectValue $zval, string $property, mixed $value): void
     {
         $object = $zval->value;
-        $access = $this->getWriteAccessInfo(get_class($object), $property, $value);
+        $access = $this->getWriteAccessInfo($object::class, $property, $value);
         $camelized = AccessHelper::camelize($property);
 
         if ($access[self::ACCESS_TYPE] === self::ACCESS_TYPE_ADDER_AND_REMOVER) {
@@ -554,13 +546,12 @@ class Accessor implements PropertyAccessorInterface
     /**
      * Guesses how to write the property value.
      *
-     * @param mixed $value
      * @phpstan-param class-string $class
      *
      * @return array<int, mixed>
      * @phpstan-return array{0: bool, 1: int, 2?: string, 3?: bool, 4?: string, 5?: string}
      */
-    private function getWriteAccessInfo(string $class, string $property, $value): array
+    private function getWriteAccessInfo(string $class, string $property, mixed $value): array
     {
         $key = rawurlencode($class) . '..' . rawurlencode($property);
 
@@ -589,13 +580,13 @@ class Accessor implements PropertyAccessorInterface
      *
      * @return bool Whether the property is writable
      */
-    private function isPropertyWritable($object, string $property): bool
+    private function isPropertyWritable(mixed $object, string $property): bool
     {
         if (! is_object($object)) {
             return false;
         }
 
-        $access = $this->getWriteAccessInfo(get_class($object), $property, []);
+        $access = $this->getWriteAccessInfo($object::class, $property, []);
 
         return $access[self::ACCESS_TYPE] === self::ACCESS_TYPE_METHOD
             || $access[self::ACCESS_TYPE] === self::ACCESS_TYPE_PROPERTY

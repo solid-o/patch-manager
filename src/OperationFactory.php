@@ -33,7 +33,7 @@ class OperationFactory
 
     private Accessor $accessor;
 
-    public function __construct(?Accessor $accessor = null)
+    public function __construct(Accessor|null $accessor = null)
     {
         $this->accessor = $accessor ?? new Accessor();
     }

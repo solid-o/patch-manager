@@ -9,18 +9,13 @@ use Symfony\Component\PropertyAccess\PropertyPathInterface;
 trait AccessorTraitPhp74
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getValue($objectOrArray, $propertyPath)
     {
         return $this->doGetValue($objectOrArray, $propertyPath);
     }
 
-    /**
-     * @param object | array<array-key, mixed> $objectOrArray
-     * @param PropertyPathInterface | string $propertyPath
-     *
-     * @return mixed
-     */
-    abstract protected function doGetValue($objectOrArray, $propertyPath);
+    /** @param object | array<array-key, mixed> $objectOrArray */
+    abstract protected function doGetValue(object|array $objectOrArray, PropertyPathInterface|string $propertyPath): mixed;
 }

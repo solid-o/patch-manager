@@ -26,7 +26,7 @@ class TraversableArrayObject implements \ArrayAccess, \IteratorAggregate, \Count
     /**
      * {@inheritdoc}
      */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->array[$offset];
     }
@@ -54,7 +54,7 @@ class TraversableArrayObject implements \ArrayAccess, \IteratorAggregate, \Count
     /**
      * {@inheritdoc}
      */
-    public function getIterator(): iterable
+    public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->array);
     }
@@ -81,5 +81,15 @@ class TraversableArrayObject implements \ArrayAccess, \IteratorAggregate, \Count
     public function unserialize($serialized): void
     {
         $this->array = (array) \unserialize((string) $serialized);
+    }
+
+    public function __serialize(): array
+    {
+        return ['data' => $this->array];
+    }
+
+    public function __unserialize(array $data): void
+    {
+        $this->array = $data['data'];
     }
 }

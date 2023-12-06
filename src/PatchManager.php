@@ -41,9 +41,9 @@ class PatchManager implements PatchManagerInterface
     private AdapterFactoryInterface $adapterFactory;
     private ValidatorInterface $validator;
     private OperationFactory $operationsFactory;
-    protected ?CacheItemPoolInterface $cache;
+    protected CacheItemPoolInterface|null $cache;
 
-    public function __construct(?ValidatorInterface $validator = null)
+    public function __construct(ValidatorInterface|null $validator = null)
     {
         if ($validator === null) {
             if (! class_exists(Validation::class)) {
@@ -117,7 +117,7 @@ class PatchManager implements PatchManagerInterface
      *
      * @required
      */
-    public function setCache(?CacheItemPoolInterface $cache): void
+    public function setCache(CacheItemPoolInterface|null $cache): void
     {
         $this->cache = $cache;
     }

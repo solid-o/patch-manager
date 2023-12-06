@@ -3,7 +3,7 @@
 namespace Solido\PatchManager\Tests\Fixtures\JSONPointer;
 
 /**
- * This class is a hand written simplified version of PHP native `ArrayObject`
+ * This class is a hand-written simplified version of PHP native `ArrayObject`
  * class, to show that it behaves differently than the PHP native implementation.
  */
 class NonTraversableArrayObject implements \ArrayAccess, \Countable, \Serializable
@@ -26,7 +26,7 @@ class NonTraversableArrayObject implements \ArrayAccess, \Countable, \Serializab
     /**
      * {@inheritdoc}
      */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->array[$offset];
     }
@@ -57,6 +57,16 @@ class NonTraversableArrayObject implements \ArrayAccess, \Countable, \Serializab
     public function count(): int
     {
         return \count($this->array);
+    }
+
+    public function __serialize(): array
+    {
+        return ['data' => $this->array];
+    }
+
+    public function __unserialize(array $data): void
+    {
+        $this->array = $data['data'];
     }
 
     /**

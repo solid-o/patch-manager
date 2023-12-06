@@ -10,16 +10,11 @@ use Symfony\Component\PropertyAccess\PropertyPathInterface;
 
 trait AccessorTraitPhp80
 {
-    public function getValue(object | array $objectOrArray, PropertyPathInterface | string $propertyPath): mixed
+    public function getValue(object|array $objectOrArray, PropertyPathInterface|string $propertyPath): mixed
     {
         return $this->doGetValue($objectOrArray, $propertyPath);
     }
 
-    /**
-     * @param object | array<array-key, mixed> $objectOrArray
-     * @param PropertyPathInterface | string $propertyPath
-     *
-     * @return mixed
-     */
-    abstract protected function doGetValue($objectOrArray, $propertyPath);
+    /** @param object | array<array-key, mixed> $objectOrArray */
+    abstract protected function doGetValue(object|array $objectOrArray, PropertyPathInterface|string $propertyPath): mixed;
 }

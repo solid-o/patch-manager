@@ -18,10 +18,12 @@ class Value
     /** @var T */
     public $value;
 
-    public ?bool $isRefChained;
+    /** @var T|null */
+    public $reference;
 
-    /** @param mixed $value */
-    public static function create($value): self
+    public bool|null $isRefChained;
+
+    public static function create(mixed $value): self
     {
         if (is_array($value)) {
             $zval = new ArrayValue();
@@ -30,7 +32,7 @@ class Value
         } elseif (is_object($value)) {
             $zval = new ObjectValue();
         } else {
-            $zval = new Value();
+            $zval = new self();
         }
 
         $zval->value = $value;

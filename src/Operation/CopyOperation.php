@@ -12,7 +12,7 @@ use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 class CopyOperation extends AbstractOperation
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function execute(&$subject, $operation): void
     {

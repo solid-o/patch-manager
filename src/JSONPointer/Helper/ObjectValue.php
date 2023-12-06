@@ -10,5 +10,6 @@ class ObjectValue extends Value
     /** @var object */
     public $value; // phpcs:ignore SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
 
-    public ?object $reference;
+    /** @var object|null */
+    public $reference; // phpcs:ignore SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
 }

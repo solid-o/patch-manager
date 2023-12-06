@@ -25,5 +25,5 @@ interface OperationInterface
      * @throws TransformationFailedException Thrown by data-mappers if the data cannot be transformed into correct form.
      * @throws FormTransformationFailedException Thrown by data-mappers if the data cannot be transformed into correct form.
      */
-    public function execute(&$subject, $operation): void;
+    public function execute(object|array &$subject, $operation): void;
 }

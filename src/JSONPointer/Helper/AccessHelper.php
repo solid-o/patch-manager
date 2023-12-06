@@ -19,14 +19,13 @@ use Symfony\Component\String\Inflector\InflectorInterface;
 use function array_map;
 use function assert;
 use function class_exists;
-use function get_class;
 use function gettype;
 use function implode;
 use function interface_exists;
 use function is_iterable;
 use function is_object;
 use function lcfirst;
-use function Safe\sprintf;
+use function sprintf;
 use function str_replace;
 use function ucwords;
 
@@ -34,8 +33,7 @@ use function ucwords;
 final class AccessHelper
 {
     private ReflectionClass $reflectionClass;
-    private ?ReflectionProperty $reflectionProperty;
-    private string $property;
+    private ReflectionProperty|null $reflectionProperty;
     private string $camelized;
 
     /** @phpstan-var InflectorInterface */
@@ -46,7 +44,7 @@ final class AccessHelper
      *
      * @throws ReflectionException
      */
-    public function __construct(string $class, string $property)
+    public function __construct(string $class, private string $property)
     {
         $this->reflectionClass = new ReflectionClass($class);
         if (
@@ -60,7 +58,6 @@ final class AccessHelper
             $this->reflectionClass = $reflectionClass;
         }
 
-        $this->property = $property;
         $this->camelized = self::camelize($property);
         $this->reflectionProperty = null;
 
@@ -156,12 +153,10 @@ final class AccessHelper
     /**
      * Gets the write access information.
      *
-     * @param mixed $value
-     *
      * @return array<int, mixed>
      * @phpstan-return array{0: bool, 1: int, 2?: string, 3?: bool, 4?: string, 5?: string}
      */
-    public function getWriteAccessInfo($value): array
+    public function getWriteAccessInfo(mixed $value): array
     {
         $hasProperty = $this->reflectionProperty !== null;
 
@@ -220,7 +215,7 @@ final class AccessHelper
                     $this->property,
                     $this->reflectionClass->name,
                     implode('()", "', $adderRemover),
-                    is_object($value) ? get_class($value) : gettype($value),
+                    is_object($value) ? $value::class : gettype($value),
                 ),
             ];
         }
@@ -247,7 +242,7 @@ final class AccessHelper
      * @return array<string>|null An array containing the adder and remover when found, null otherwise
      * @phpstan-return array{string, string}|null
      */
-    private function findAdderAndRemover(): ?array
+    private function findAdderAndRemover(): array|null
     {
         $singulars = $this->inflector->singularize($this->camelized);
 

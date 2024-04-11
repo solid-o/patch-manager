@@ -52,8 +52,8 @@
         "symfony/string": "^5.4 || ^6.0 || ^7.0"
     },
     "autoload": {
-        "files": [
-            "bootstrap.php"
+        "classmap": [
+            "src/JSONPointer/AccessorTrait.php"
         ],
         "psr-4": {
             "Solido\\PatchManager\\": "src/"

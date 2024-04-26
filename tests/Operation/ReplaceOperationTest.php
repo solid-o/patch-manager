@@ -3,6 +3,8 @@
 namespace Solido\PatchManager\Tests\Operation;
 
 use Solido\PatchManager\Exception\InvalidJSONException;
+use Solido\PatchManager\JSONPointer\Accessor;
+use Solido\PatchManager\JSONPointer\Path;
 use Solido\PatchManager\Operation\ReplaceOperation;
 use PHPUnit\Framework\TestCase;
 
@@ -15,7 +17,7 @@ class ReplaceOperationTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->operation = new ReplaceOperation();
+        $this->operation = new ReplaceOperation(new Accessor(), static fn (string $p) => new Path($p));
     }
 
     public function testShouldReplaceValueIfExists(): void

@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Solido\PatchManager\Operation;
 
-use Solido\PatchManager\JSONPointer\Accessor;
+use Closure;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
  * @template T
@@ -12,10 +13,9 @@ use Solido\PatchManager\JSONPointer\Accessor;
  */
 abstract class AbstractOperation implements OperationInterface
 {
-    protected Accessor $accessor;
-
-    public function __construct(Accessor|null $accessor = null)
-    {
-        $this->accessor = $accessor ?? new Accessor();
+    public function __construct(
+        protected PropertyAccessorInterface $accessor,
+        protected Closure $pathFactory,
+    ) {
     }
 }

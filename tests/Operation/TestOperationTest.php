@@ -3,6 +3,8 @@
 namespace Solido\PatchManager\Tests\Operation;
 
 use Solido\PatchManager\Exception\InvalidJSONException;
+use Solido\PatchManager\JSONPointer\Accessor;
+use Solido\PatchManager\JSONPointer\Path;
 use Solido\PatchManager\Operation\TestOperation;
 use PHPUnit\Framework\TestCase;
 
@@ -15,7 +17,7 @@ class TestOperationTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->operation = new TestOperation();
+        $this->operation = new TestOperation(new Accessor(), static fn (string $p) => new Path($p));
     }
 
     public function testShouldThrowIfValuesAreNotEqual(): void

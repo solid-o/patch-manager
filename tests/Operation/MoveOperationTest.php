@@ -2,6 +2,8 @@
 
 namespace Solido\PatchManager\Tests\Operation;
 
+use Solido\PatchManager\JSONPointer\Accessor;
+use Solido\PatchManager\JSONPointer\Path;
 use Solido\PatchManager\Operation\MoveOperation;
 use PHPUnit\Framework\TestCase;
 
@@ -14,7 +16,7 @@ class MoveOperationTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->operation = new MoveOperation();
+        $this->operation = new MoveOperation(new Accessor(), static fn (string $p) => new Path($p));
     }
 
     public function testShouldMoveValue(): void

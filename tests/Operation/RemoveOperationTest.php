@@ -4,6 +4,8 @@ namespace Solido\PatchManager\Tests\Operation;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Solido\PatchManager\Exception\InvalidJSONException;
+use Solido\PatchManager\JSONPointer\Accessor;
+use Solido\PatchManager\JSONPointer\Path;
 use Solido\PatchManager\Operation\RemoveOperation;
 use PHPUnit\Framework\TestCase;
 
@@ -16,7 +18,7 @@ class RemoveOperationTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->operation = new RemoveOperation();
+        $this->operation = new RemoveOperation(new Accessor(), static fn (string $p) => new Path($p));
     }
 
     public function testShouldRemoveValue(): void

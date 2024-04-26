@@ -3,6 +3,8 @@
 namespace Solido\PatchManager\Tests\Operation;
 
 use Solido\PatchManager\Exception\InvalidJSONException;
+use Solido\PatchManager\JSONPointer\Accessor;
+use Solido\PatchManager\JSONPointer\Path;
 use Solido\PatchManager\Operation\CopyOperation;
 use PHPUnit\Framework\TestCase;
 
@@ -15,7 +17,7 @@ class CopyOperationTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->operation = new CopyOperation();
+        $this->operation = new CopyOperation(new Accessor(), static fn (string $p) => new Path($p));
     }
 
     public function testShouldCopyValue(): void

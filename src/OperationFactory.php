@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Solido\PatchManager;
 
+use Closure;
 use Solido\PatchManager\Exception\UnknownOperationException;
 use Solido\PatchManager\JSONPointer\Accessor;
+use Solido\PatchManager\JSONPointer\Path;
 use Solido\PatchManager\Operation\AddOperation;
 use Solido\PatchManager\Operation\CopyOperation;
 use Solido\PatchManager\Operation\MoveOperation;
@@ -13,6 +15,7 @@ use Solido\PatchManager\Operation\OperationInterface;
 use Solido\PatchManager\Operation\RemoveOperation;
 use Solido\PatchManager\Operation\ReplaceOperation;
 use Solido\PatchManager\Operation\TestOperation;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 class OperationFactory
 {
@@ -31,11 +34,13 @@ class OperationFactory
         self::MOVE_OPERATION => MoveOperation::class,
     ];
 
-    private Accessor $accessor;
+    private PropertyAccessorInterface $accessor;
+    private Closure $pathFactory;
 
-    public function __construct(Accessor|null $accessor = null)
+    public function __construct(PropertyAccessorInterface|null $accessor = null, Closure|null $pathFactory = null)
     {
         $this->accessor = $accessor ?? new Accessor();
+        $this->pathFactory = $pathFactory ?? static fn (string $path) => new Path($path);
     }
 
     /**
@@ -51,6 +56,6 @@ class OperationFactory
 
         $class = self::OPERATION_MAP[$type];
 
-        return new $class($this->accessor);
+        return new $class($this->accessor, $this->pathFactory);
     }
 }

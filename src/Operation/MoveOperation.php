@@ -14,10 +14,10 @@ class MoveOperation extends AbstractOperation
      */
     public function execute(&$subject, $operation): void
     {
-        $copyOp = new CopyOperation($this->accessor);
+        $copyOp = new CopyOperation($this->accessor, $this->pathFactory);
         $copyOp->execute($subject, $operation);
 
-        $removeOp = new RemoveOperation($this->accessor);
+        $removeOp = new RemoveOperation($this->accessor, $this->pathFactory);
         $operation = clone $operation;
         $operation->path = $operation->from;
         $removeOp->execute($subject, $operation);

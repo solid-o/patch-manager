@@ -6,7 +6,6 @@ namespace Solido\PatchManager\Operation;
 
 use ArrayAccess;
 use Solido\PatchManager\Exception\InvalidJSONException;
-use Solido\PatchManager\JSONPointer\Path;
 use stdClass;
 use Traversable;
 
@@ -22,7 +21,7 @@ class RemoveOperation extends AbstractOperation
      */
     public function execute(&$subject, $operation): void
     {
-        $path = new Path($operation->path);
+        $path = ($this->pathFactory)($operation->path);
         $element = $path->getElement($path->getLength() - 1);
 
         $pathLength = $path->getLength();

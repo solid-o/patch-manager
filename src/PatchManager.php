@@ -12,8 +12,10 @@ use Solido\DataMapper\Exception\MappingErrorException;
 use Solido\DataTransformers\Exception\TransformationFailedException;
 use Solido\PatchManager\Exception\Error;
 use Solido\PatchManager\Exception\InvalidJSONException;
+use Solido\PatchManager\Exception\OperationFailedException;
 use Solido\PatchManager\Exception\OperationNotAllowedException;
 use Solido\PatchManager\Exception\UnmergeablePatchException;
+use Solido\PatchManager\Exception\ValidationFailedException;
 use Solido\PatchManager\JSONPointer\Path;
 use stdClass;
 use Symfony\Component\Form\Exception\TransformationFailedException as FormTransformationFailedException;
@@ -103,7 +105,7 @@ class PatchManager implements PatchManagerInterface
                 FormTransformationFailedException |
                 TransformationFailedException $exception
             ) {
-                throw new InvalidJSONException('Operation failed at path "' . $operation->path . '"', 0, $exception);
+                throw new OperationFailedException('Operation failed at path "' . $operation->path . '"', 0, $exception);
             }
         }
 
@@ -208,7 +210,7 @@ class PatchManager implements PatchManagerInterface
             return;
         }
 
-        throw new InvalidJSONException('Invalid entity');
+        throw new ValidationFailedException('Invalid entity', violations: $violations);
     }
 
     /**

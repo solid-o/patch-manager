@@ -20,3 +20,9 @@ if (! class_exists(AccessorTrait::class, false)) {
 
     class_alias($targetTrait, AccessorTrait::class);
 }
+
+if (false) {
+    trait AccessorTrait
+    {
+    }
+}

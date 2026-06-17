@@ -11,11 +11,9 @@ use function is_object;
 
 class Value
 {
-    /** @var mixed */
-    public $value;
+    public mixed $value;
 
-    /** @var mixed|null */
-    public $reference;
+    public mixed $reference = null;
 
     public bool|null $isRefChained;
 

@@ -40,43 +40,43 @@ class Accessor implements PropertyAccessorInterface
     use AccessorTrait;
 
     /** @internal */
-    public const ACCESS_HAS_PROPERTY = 0;
+    public const int ACCESS_HAS_PROPERTY = 0;
 
     /** @internal */
-    public const ACCESS_TYPE = 1;
+    public const int ACCESS_TYPE = 1;
 
     /** @internal */
-    public const ACCESS_NAME = 2;
+    public const int ACCESS_NAME = 2;
 
     /** @internal */
-    public const ACCESS_REF = 3;
+    public const int ACCESS_REF = 3;
 
     /** @internal */
-    public const ACCESS_ADDER = 4;
+    public const int ACCESS_ADDER = 4;
 
     /** @internal */
-    public const ACCESS_REMOVER = 5;
+    public const int ACCESS_REMOVER = 5;
 
     /** @internal */
-    public const ACCESS_TYPE_METHOD = 0;
+    public const int ACCESS_TYPE_METHOD = 0;
 
     /** @internal */
-    public const ACCESS_TYPE_PROPERTY = 1;
+    public const int ACCESS_TYPE_PROPERTY = 1;
 
     /** @internal */
-    public const ACCESS_TYPE_ADDER_AND_REMOVER = 3;
+    public const int ACCESS_TYPE_ADDER_AND_REMOVER = 3;
 
     /** @internal */
-    public const ACCESS_TYPE_NOT_FOUND = 4;
+    public const int ACCESS_TYPE_NOT_FOUND = 4;
 
     /** @internal */
-    public const CACHE_PREFIX_READ = 'r';
+    public const string CACHE_PREFIX_READ = 'r';
 
     /** @internal */
-    public const CACHE_PREFIX_WRITE = 'w';
+    public const string CACHE_PREFIX_WRITE = 'w';
 
     /** @internal */
-    public const CACHE_PREFIX_PROPERTY_PATH = 'p';
+    public const string CACHE_PREFIX_PROPERTY_PATH = 'p';
 
     /**
      * @var array<string, array<int, mixed>>

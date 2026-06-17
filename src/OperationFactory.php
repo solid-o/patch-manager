@@ -20,13 +20,13 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 class OperationFactory
 {
-    public const TEST_OPERATION = 'test';
-    public const REMOVE_OPERATION = 'remove';
-    public const ADD_OPERATION = 'add';
-    public const REPLACE_OPERATION = 'replace';
-    public const COPY_OPERATION = 'copy';
-    public const MOVE_OPERATION = 'move';
-    public const OPERATION_MAP = [
+    public const string TEST_OPERATION = 'test';
+    public const string REMOVE_OPERATION = 'remove';
+    public const string ADD_OPERATION = 'add';
+    public const string REPLACE_OPERATION = 'replace';
+    public const string COPY_OPERATION = 'copy';
+    public const string MOVE_OPERATION = 'move';
+    public const array OPERATION_MAP = [
         self::TEST_OPERATION => TestOperation::class,
         self::REMOVE_OPERATION => RemoveOperation::class,
         self::ADD_OPERATION => AddOperation::class,
@@ -49,6 +49,7 @@ class OperationFactory
      *
      * @throws UnknownOperationException
      */
+
     /** @return OperationInterface<stdClass> */
     public function factory(string $type): OperationInterface
     {

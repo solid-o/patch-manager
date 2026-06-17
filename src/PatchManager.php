@@ -125,6 +125,7 @@ class PatchManager implements PatchManagerInterface
      *
      * @required
      */
+
     /** @param CacheItemPoolInterface<mixed>|null $cache */
     public function setCache(CacheItemPoolInterface|null $cache): void
     {

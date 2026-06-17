@@ -9,8 +9,8 @@ use ArrayAccess;
 class ArrayAccessValue extends ObjectValue
 {
     /** @var ArrayAccess<array-key, mixed> */
-    public $value; // phpcs:ignore SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
+    public mixed $value;
 
     /** @var ArrayAccess<array-key, mixed> */
-    public $reference; // phpcs:ignore SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
+    public mixed $reference;
 }

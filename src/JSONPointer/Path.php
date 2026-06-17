@@ -13,6 +13,7 @@ use Symfony\Component\PropertyAccess\PropertyPathIterator;
 
 use function array_map;
 use function array_pop;
+use function array_values;
 use function count;
 use function explode;
 use function implode;

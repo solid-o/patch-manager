@@ -7,8 +7,7 @@ namespace Solido\PatchManager\JSONPointer\Helper;
 class ArrayValue extends Value
 {
     /** @var array<array-key, mixed> */
-    public $value; // phpcs:ignore SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
+    public mixed $value;
 
-    /** @var mixed */
-    public $reference; // phpcs:ignore SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
+    public mixed $reference;
 }

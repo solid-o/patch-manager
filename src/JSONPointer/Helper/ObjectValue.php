@@ -7,8 +7,8 @@ namespace Solido\PatchManager\JSONPointer\Helper;
 class ObjectValue extends Value
 {
     /** @var object */
-    public $value; // phpcs:ignore SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
+    public mixed $value;
 
     /** @var object|null */
-    public $reference; // phpcs:ignore SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint
+    public mixed $reference;
 }

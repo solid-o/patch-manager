@@ -2,9 +2,10 @@
 
 namespace Solido\PatchManager\Tests;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
 use Solido\PatchManager\Exception\UnknownOperationException;
 use Solido\PatchManager\OperationFactory;
-use PHPUnit\Framework\TestCase;
 
 class OperationFactoryTest extends TestCase
 {
@@ -18,16 +19,14 @@ class OperationFactoryTest extends TestCase
         $this->factory = new OperationFactory();
     }
 
-    public function getOperations(): iterable
+    public static function getOperations(): iterable
     {
         foreach (OperationFactory::OPERATION_MAP as $operationType => $operationClass) {
             yield [$operationType, $operationClass];
         }
     }
 
-    /**
-     * @dataProvider getOperations
-     */
+    #[DataProvider("getOperations")]
     public function testFactoryShouldReturnAnOperationObject(string $operationType, string $operationClass): void
     {
         self::assertInstanceOf($operationClass, $this->factory->factory($operationType));

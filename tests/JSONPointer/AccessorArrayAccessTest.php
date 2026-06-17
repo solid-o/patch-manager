@@ -2,8 +2,9 @@
 
 namespace Solido\PatchManager\Tests\JSONPointer;
 
-use Solido\PatchManager\JSONPointer\Accessor;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Solido\PatchManager\JSONPointer\Accessor;
 
 abstract class AccessorArrayAccessTest extends TestCase
 {
@@ -19,44 +20,38 @@ abstract class AccessorArrayAccessTest extends TestCase
 
     abstract protected function getContainer(array $array);
 
-    public function getValidPropertyPaths(): iterable
+    abstract protected static function createContainer(array $array);
+
+    public static function getValidPropertyPaths(): iterable
     {
         return [
-            [$this->getContainer(['firstName' => 'Bernhard']), '/firstName', 'Bernhard'],
-            [$this->getContainer(['person' => $this->getContainer(['firstName' => 'Bernhard'])]), '/person/firstName', 'Bernhard'],
+            [static::createContainer(['firstName' => 'Bernhard']), '/firstName', 'Bernhard'],
+            [static::createContainer(['person' => static::createContainer(['firstName' => 'Bernhard'])]), '/person/firstName', 'Bernhard'],
         ];
     }
 
-    /**
-     * @dataProvider getValidPropertyPaths
-     */
+    #[DataProvider("getValidPropertyPaths")]
     public function testGetValue($collection, string $path, string $value): void
     {
         self::assertSame($value, $this->propertyAccessor->getValue($collection, $path));
     }
 
-    /**
-     * @dataProvider getValidPropertyPaths
-     */
-    public function testSetValue($collection, string $path): void
+    #[DataProvider("getValidPropertyPaths")]
+    public function testSetValue($collection, string $path, string $_value): void
     {
         $this->propertyAccessor->setValue($collection, $path, 'Updated');
 
         self::assertSame('Updated', $this->propertyAccessor->getValue($collection, $path));
     }
 
-    /**
-     * @dataProvider getValidPropertyPaths
-     */
-    public function testIsReadable($collection, string $path): void
+    #[DataProvider("getValidPropertyPaths")]
+    public function testIsReadable($collection, string $path, string $_value): void
     {
         self::assertTrue($this->propertyAccessor->isReadable($collection, $path));
     }
 
-    /**
-     * @dataProvider getValidPropertyPaths
-     */
-    public function testIsWritable($collection, string $path): void
+    #[DataProvider("getValidPropertyPaths")]
+    public function testIsWritable($collection, string $path, string $_value): void
     {
         self::assertTrue($this->propertyAccessor->isWritable($collection, $path));
     }

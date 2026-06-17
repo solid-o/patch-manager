@@ -10,15 +10,12 @@ use ProxyManager\Proxy\ProxyInterface;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionProperty;
-use RuntimeException;
 use Solido\PatchManager\JSONPointer\Accessor;
-use Symfony\Component\Inflector\Inflector;
 use Symfony\Component\String\Inflector\EnglishInflector;
 use Symfony\Component\String\Inflector\InflectorInterface;
 
 use function array_map;
 use function assert;
-use function class_exists;
 use function gettype;
 use function implode;
 use function interface_exists;
@@ -32,6 +29,7 @@ use function ucwords;
 /** @internal */
 final class AccessHelper
 {
+    /** @var ReflectionClass<object> */
     private ReflectionClass $reflectionClass;
     private ReflectionProperty|null $reflectionProperty;
     private string $camelized;
@@ -67,24 +65,7 @@ final class AccessHelper
             $this->reflectionProperty = $this->reflectionClass->getProperty($this->camelized);
         }
 
-        if (! class_exists(EnglishInflector::class) && ! class_exists(Inflector::class)) {
-            throw new RuntimeException('One of Symfony String or Symfony Inflector must be installed to make patch manager to work');
-        }
-
-        /** @phpstan-ignore-next-line */
-        $this->inflector = class_exists(EnglishInflector::class) ? new EnglishInflector() : new class {
-            /** @return string[] */
-            public function singularize(string $plural): array
-            {
-                return (array) Inflector::singularize($plural);
-            }
-
-            /** @return string[] */
-            public function pluralize(string $singular): array
-            {
-                return (array) Inflector::pluralize($singular);
-            }
-        };
+        $this->inflector = new EnglishInflector();
     }
 
     /**

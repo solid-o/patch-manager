@@ -13,4 +13,9 @@ class AccessorNonTraversableArrayObjectTest extends AccessorArrayAccessTest
     {
         return new NonTraversableArrayObject($array);
     }
+
+    protected static function createContainer(array $array)
+    {
+        return new NonTraversableArrayObject($array);
+    }
 }

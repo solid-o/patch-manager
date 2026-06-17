@@ -62,6 +62,10 @@ class TestOperation extends AbstractOperation
             }
 
             $this->sort($value);
+            if (! is_array($objectValue)) {
+                return false;
+            }
+
             $this->sort($objectValue);
 
             return $value === $objectValue;

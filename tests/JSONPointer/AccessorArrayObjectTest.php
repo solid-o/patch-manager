@@ -11,4 +11,9 @@ class AccessorArrayObjectTest extends AccessorCollectionTest
     {
         return new \ArrayObject($array);
     }
+
+    protected static function createContainer(array $array)
+    {
+        return new \ArrayObject($array);
+    }
 }

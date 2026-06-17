@@ -2,11 +2,12 @@
 
 namespace Solido\PatchManager\Tests\Operation;
 
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
 use Solido\PatchManager\Exception\InvalidJSONException;
 use Solido\PatchManager\JSONPointer\Accessor;
 use Solido\PatchManager\JSONPointer\Path;
 use Solido\PatchManager\Operation\TestOperation;
-use PHPUnit\Framework\TestCase;
 
 class TestOperationTest extends TestCase
 {
@@ -27,7 +28,7 @@ class TestOperationTest extends TestCase
         $this->operation->execute($op, (object) ['path' => '/a', 'value' => 'bar']);
     }
 
-    public function getTestObject()
+    public static function getTestObject()
     {
         return (object) [
             'boolT' => true,
@@ -44,7 +45,7 @@ class TestOperationTest extends TestCase
         ];
     }
 
-    public function getEqualValues(): iterable
+    public static function getEqualValues(): iterable
     {
         yield ['/boolT', true];
         yield ['/boolT', 'true'];
@@ -80,18 +81,16 @@ class TestOperationTest extends TestCase
         yield ['/object_with_subobject', (object) ['foo' => ['bar', 'baz'], 'foobar' => 'barbar']];
     }
 
-    /**
-     * @dataProvider getEqualValues
-     */
+    #[DataProvider("getEqualValues")]
     public function testEqualValues(string $path, $value): void
     {
-        $testObj = $this->getTestObject();
+        $testObj = self::getTestObject();
 
         $this->operation->execute($testObj, (object) ['path' => $path, 'value' => $value]);
         self::assertTrue(true);
     }
 
-    public function getUnequalValues(): iterable
+    public static function getUnequalValues(): iterable
     {
         yield ['/boolT', false];
         yield ['/boolT', 'false'];
@@ -127,12 +126,10 @@ class TestOperationTest extends TestCase
         yield ['/object_with_subobject', (object) ['foo' => ['baz', 'bar'], 'foobar' => 'barbar']];
     }
 
-    /**
-     * @dataProvider getEqualValues
-     */
+    #[DataProvider("getEqualValues")]
     public function testUnequalValues(string $path, $value): void
     {
-        $testObj = $this->getTestObject();
+        $testObj = self::getTestObject();
 
         $this->operation->execute($testObj, (object) ['path' => $path, 'value' => $value]);
         self::assertTrue(true);

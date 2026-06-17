@@ -43,6 +43,7 @@ class PatchManager implements PatchManagerInterface
     private AdapterFactoryInterface $adapterFactory;
     private ValidatorInterface $validator;
     private OperationFactory $operationsFactory;
+    /** @var CacheItemPoolInterface<mixed>|null */
     protected CacheItemPoolInterface|null $cache;
 
     public function __construct(ValidatorInterface|null $validator = null)
@@ -89,6 +90,7 @@ class PatchManager implements PatchManagerInterface
 
         $factory = $this->getOperationsFactory();
 
+        $subject = $patchable;
         foreach ($object as $operation) {
             if (isset($operation->value)) {
                 $operation->value = json_decode(json_encode($operation->value, JSON_THROW_ON_ERROR), true, 512, JSON_THROW_ON_ERROR);
@@ -97,7 +99,7 @@ class PatchManager implements PatchManagerInterface
             $op = $factory->factory($operation->op);
 
             try {
-                $op->execute($patchable, $operation);
+                $op->execute($subject, $operation);
             } catch (
                 OperationNotAllowedException |
                 NoSuchPropertyException |
@@ -109,8 +111,12 @@ class PatchManager implements PatchManagerInterface
             }
         }
 
-        $this->validate($object, $patchable);
-        $this->commit($patchable);
+        if (! $subject instanceof PatchableInterface) {
+            throw new InvalidJSONException('Invalid document.');
+        }
+
+        $this->validate($object, $subject);
+        $this->commit($subject);
     }
 
     /**
@@ -119,6 +125,7 @@ class PatchManager implements PatchManagerInterface
      *
      * @required
      */
+    /** @param CacheItemPoolInterface<mixed>|null $cache */
     public function setCache(CacheItemPoolInterface|null $cache): void
     {
         $this->cache = $cache;

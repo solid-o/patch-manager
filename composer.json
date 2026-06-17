@@ -25,15 +25,16 @@
         "csfix": "vendor/bin/phpcbf --standard=Solido src/"
     },
     "require": {
-        "php": "^8.1",
+        "php": "^8.4",
         "ext-json": "*",
         "justinrainbow/json-schema": "^5.2",
-        "solido/common": "^0.3 || ^0.4",
-        "solido/data-mapper": "^0.4",
-        "symfony/cache": "^5.4 || ^6.0 || ^7.0",
-        "symfony/http-foundation": "^5.4 || ^6.0 || ^7.0",
-        "symfony/property-access": "^5.4 || ^6.0 || ^7.0",
-        "symfony/validator": "^5.4 || ^6.0 || ^7.0"
+        "solido/common": "^0.3 || ^0.4 || ^0.5",
+        "solido/data-mapper": "^0.4 || ^0.5",
+        "symfony/cache": "^7.4 || ^8.0",
+        "symfony/http-foundation": "^7.4 || ^8.0",
+        "symfony/property-access": "^7.4 || ^8.0",
+        "symfony/string": "^7.4 || ^8.0",
+        "symfony/validator": "^7.4 || ^8.0"
     },
     "require-dev": {
         "doctrine/collections": "^1.0 || ^2.0 || ^3.0",
@@ -43,13 +44,11 @@
         "kcs/psr-phpstan-rules": "dev-main",
         "nyholm/psr7": "^1.0",
         "phpspec/prophecy-phpunit": "^2.0",
-        "phpunit/phpunit": "^9.4",
+        "phpunit/phpunit": "^11.0 || ^12.0",
         "roave/security-advisories": "dev-master",
-        "solido/data-transformers": "^0.4@dev",
+        "solido/data-transformers": "^0.4 || ^0.5@dev",
         "solido/php-coding-standards": "dev-master",
-        "symfony/form": "^5.4 || ^6.0 || ^7.0",
-        "symfony/inflector": "^5.4 || ^6.0 || ^7.0",
-        "symfony/string": "^5.4 || ^6.0 || ^7.0"
+        "symfony/form": "^7.4 || ^8.0"
     },
     "autoload": {
         "classmap": [
@@ -76,7 +75,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.4.x-dev"
+            "dev-master": "0.5.x-dev"
         }
     }
 }

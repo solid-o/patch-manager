@@ -11,4 +11,9 @@ class AccessorArrayTest extends AccessorCollectionTest
     {
         return $array;
     }
+
+    protected static function createContainer(array $array)
+    {
+        return $array;
+    }
 }

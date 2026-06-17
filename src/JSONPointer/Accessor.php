@@ -90,8 +90,10 @@ class Accessor implements PropertyAccessorInterface
      */
     private array $writePropertyCache;
 
+    /** @var CacheItemPoolInterface<mixed> */
     private CacheItemPoolInterface $cacheItemPool;
 
+    /** @param CacheItemPoolInterface<mixed>|null $cacheItemPool */
     public function __construct(CacheItemPoolInterface|null $cacheItemPool = null)
     {
         $this->cacheItemPool = $cacheItemPool ?? new ArrayAdapter();
@@ -102,9 +104,11 @@ class Accessor implements PropertyAccessorInterface
     /**
      * {@inheritDoc}
      *
-     * @param array | object $objectOrArray
+     * @param array<array-key, mixed> | object $objectOrArray
      * @param string | PropertyPathInterface $propertyPath
      * @param mixed $value
+     *
+     * @param-out array<array-key, mixed> | object $objectOrArray
      */
     public function setValue(&$objectOrArray, $propertyPath, $value): void
     {
@@ -164,10 +168,7 @@ class Accessor implements PropertyAccessorInterface
                     if ($appendToArray && $propertiesCount - 2 === $i) {
                         $object = $zval->value;
                         assert(is_object($object));
-                        $className = $object::class;
-                        assert($className !== false);
-
-                        $access = $this->getWriteAccessInfo($className, $property, [$value]);
+                        $access = $this->getWriteAccessInfo($object::class, $property, [$value]);
 
                         if (! isset($access[self::ACCESS_ADDER])) {
                             throw new InvalidArgumentException('Cannot append to a non-array object');
@@ -208,7 +209,7 @@ class Accessor implements PropertyAccessorInterface
     /**
      * {@inheritDoc}
      *
-     * @param array | object $objectOrArray
+     * @param array<array-key, mixed> | object $objectOrArray
      * @param string | PropertyPathInterface $propertyPath
      */
     public function isReadable($objectOrArray, $propertyPath): bool
@@ -227,7 +228,7 @@ class Accessor implements PropertyAccessorInterface
     /**
      * {@inheritDoc}
      *
-     * @param array | object $objectOrArray
+     * @param array<array-key, mixed> | object $objectOrArray
      * @param string | PropertyPathInterface $propertyPath
      */
     public function isWritable($objectOrArray, $propertyPath): bool
@@ -360,7 +361,11 @@ class Accessor implements PropertyAccessorInterface
 
             if (isset($zval->reference)) {
                 if ($result instanceof ArrayValue) {
-                    $result->reference = &$zval->reference[$index];
+                    if (is_array($zval->reference) || $zval->reference instanceof ArrayAccess) {
+                        $result->reference = &$zval->reference[$index];
+                    } else {
+                        $result->reference = $result->value;
+                    }
                 } else {
                     $result->reference = $result->value;
                 }

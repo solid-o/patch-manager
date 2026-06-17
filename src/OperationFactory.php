@@ -15,6 +15,7 @@ use Solido\PatchManager\Operation\OperationInterface;
 use Solido\PatchManager\Operation\RemoveOperation;
 use Solido\PatchManager\Operation\ReplaceOperation;
 use Solido\PatchManager\Operation\TestOperation;
+use stdClass;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 class OperationFactory
@@ -48,6 +49,7 @@ class OperationFactory
      *
      * @throws UnknownOperationException
      */
+    /** @return OperationInterface<stdClass> */
     public function factory(string $type): OperationInterface
     {
         if (! isset(self::OPERATION_MAP[$type])) {

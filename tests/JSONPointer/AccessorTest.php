@@ -4,6 +4,9 @@ namespace Solido\PatchManager\Tests\JSONPointer;
 
 use ArrayIterator;
 use Prophecy\PhpUnit\ProphecyTrait;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RequiresPhp;
+use PHPUnit\Framework\TestCase;
 use Solido\PatchManager\JSONPointer\Accessor;
 use Solido\PatchManager\JSONPointer\Path;
 use Solido\PatchManager\Tests\Fixtures\JSONPointer\CamelizedPropertyClass;
@@ -14,7 +17,6 @@ use Solido\PatchManager\Tests\Fixtures\JSONPointer\TestClassMagicGet;
 use Solido\PatchManager\Tests\Fixtures\JSONPointer\TestClassSetValue;
 use Solido\PatchManager\Tests\Fixtures\JSONPointer\Ticket5775Object;
 use Solido\PatchManager\Tests\Fixtures\JSONPointer\TypeHinted;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\PropertyAccess\Exception\InvalidArgumentException;
 use Symfony\Component\PropertyAccess\Exception\NoSuchIndexException;
@@ -35,7 +37,7 @@ class AccessorTest extends TestCase
         $this->propertyAccessor = new Accessor();
     }
 
-    public function getPathsWithUnexpectedType(): iterable
+    public static function getPathsWithUnexpectedType(): iterable
     {
         return [
             ['', '/foobar'],
@@ -49,7 +51,7 @@ class AccessorTest extends TestCase
         ];
     }
 
-    public function getPathsWithMissingProperty(): iterable
+    public static function getPathsWithMissingProperty(): iterable
     {
         return [
             [(object) ['firstName' => 'Bernhard'], '/lastName'],
@@ -66,13 +68,13 @@ class AccessorTest extends TestCase
         ];
     }
 
-    public function getUnreachablePaths(): iterable
+    public static function getUnreachablePaths(): iterable
     {
-        yield from $this->getPathsWithMissingProperty();
+        yield from self::getPathsWithMissingProperty();
         yield [(object) ['firstName' => 'Bernhard'], '/firstName/foo'];
     }
 
-    public function getPathsWithMissingIndex(): iterable
+    public static function getPathsWithMissingIndex(): iterable
     {
         return [
             [['firstName' => 'Bernhard'], '/lastName'],
@@ -83,26 +85,20 @@ class AccessorTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getValidPropertyPaths
-     */
+    #[DataProvider("getValidPropertyPaths")]
     public function testGetValue($objectOrArray, string $path, $value): void
     {
         self::assertSame($value, $this->propertyAccessor->getValue($objectOrArray, $path));
     }
 
-    /**
-     * @dataProvider getPathsWithMissingProperty
-     */
+    #[DataProvider("getPathsWithMissingProperty")]
     public function testGetValueThrowsExceptionIfPropertyNotFound($objectOrArray, string $path)
     {
         $this->expectException(NoSuchPropertyException::class);
         $this->propertyAccessor->getValue($objectOrArray, $path);
     }
 
-    /**
-     * @dataProvider getPathsWithMissingIndex
-     */
+    #[DataProvider("getPathsWithMissingIndex")]
     public function testGetValueThrowsNoExceptionIfIndexNotFound($objectOrArray, string $path): void
     {
         self::assertNull($this->propertyAccessor->getValue($objectOrArray, $path));
@@ -163,10 +159,8 @@ class AccessorTest extends TestCase
         self::assertSame(['Bernhard'], $object->firstName);
     }
 
-    /**
-     * @dataProvider getPathsWithUnexpectedType
-     * @requires PHP < 8.0
-     */
+    #[DataProvider("getPathsWithUnexpectedType")]
+    #[RequiresPhp('< 8.0.0')]
     public function testGetValueThrowsExceptionIfNotObjectOrArray($objectOrArray, string $path): void
     {
         $this->expectException(UnexpectedTypeException::class);
@@ -174,38 +168,30 @@ class AccessorTest extends TestCase
         $this->propertyAccessor->getValue($objectOrArray, $path);
     }
 
-    /**
-     * @dataProvider getValidPropertyPaths
-     */
-    public function testSetValue($objectOrArray, string $path): void
+    #[DataProvider("getValidPropertyPaths")]
+    public function testSetValue($objectOrArray, string $path, $_value): void
     {
         $this->propertyAccessor->setValue($objectOrArray, $path, 'Updated');
 
         self::assertSame('Updated', $this->propertyAccessor->getValue($objectOrArray, $path));
     }
 
-    /**
-     * @dataProvider getValidPropertyPaths
-     */
-    public function testSetValueWithPropertyPath($objectOrArray, string $path): void
+    #[DataProvider("getValidPropertyPaths")]
+    public function testSetValueWithPropertyPath($objectOrArray, string $path, $_value): void
     {
         $this->propertyAccessor->setValue($objectOrArray, $path = new Path($path), 'Updated');
 
         self::assertSame('Updated', $this->propertyAccessor->getValue($objectOrArray, $path));
     }
 
-    /**
-     * @dataProvider getPathsWithMissingProperty
-     */
+    #[DataProvider("getPathsWithMissingProperty")]
     public function testSetValueThrowsExceptionIfPropertyNotFound($objectOrArray, string $path): void
     {
         $this->expectException(NoSuchPropertyException::class);
         $this->propertyAccessor->setValue($objectOrArray, $path, 'Updated');
     }
 
-    /**
-     * @dataProvider getPathsWithMissingIndex
-     */
+    #[DataProvider("getPathsWithMissingIndex")]
     public function testSetValueThrowsNoExceptionIfIndexNotFound($objectOrArray, string $path): void
     {
         $this->propertyAccessor->setValue($objectOrArray, $path, 'Updated');
@@ -213,9 +199,7 @@ class AccessorTest extends TestCase
         self::assertSame('Updated', $this->propertyAccessor->getValue($objectOrArray, $path));
     }
 
-    /**
-     * @dataProvider getPathsWithMissingIndex
-     */
+    #[DataProvider("getPathsWithMissingIndex")]
     public function testSetValueThrowsNoExceptionIfIndexNotFoundAndIndexExceptionsEnabled($objectOrArray, string $path): void
     {
         $this->propertyAccessor = new Accessor();
@@ -249,9 +233,7 @@ class AccessorTest extends TestCase
         $this->propertyAccessor->setValue($object, '/publicAccessorWithMoreRequiredParameters', 'Updated');
     }
 
-    /**
-     * @dataProvider getPathsWithUnexpectedType
-     */
+    #[DataProvider("getPathsWithUnexpectedType")]
     public function testSetValueThrowsExceptionIfNotObjectOrArray($objectOrArray, string $path): void
     {
         $this->expectException(UnexpectedTypeException::class);
@@ -265,25 +247,19 @@ class AccessorTest extends TestCase
         self::assertNull($this->propertyAccessor->getValue(['index' => ['nullable' => null]], '/index/nullable'));
     }
 
-    /**
-     * @dataProvider getValidPropertyPaths
-     */
-    public function testIsReadable($objectOrArray, string $path): void
+    #[DataProvider("getValidPropertyPaths")]
+    public function testIsReadable($objectOrArray, string $path, $_value): void
     {
         self::assertTrue($this->propertyAccessor->isReadable($objectOrArray, $path));
     }
 
-    /**
-     * @dataProvider getUnreachablePaths
-     */
+    #[DataProvider("getUnreachablePaths")]
     public function testIsReadableReturnsFalseIfPropertyNotFound($objectOrArray, string $path): void
     {
         self::assertFalse($this->propertyAccessor->isReadable($objectOrArray, $path));
     }
 
-    /**
-     * @dataProvider getPathsWithMissingIndex
-     */
+    #[DataProvider("getPathsWithMissingIndex")]
     public function testIsReadableReturnsTrueIfIndexNotFound($objectOrArray, string $path): void
     {
         // Non-existing indices can be read. In this case, null is returned
@@ -300,42 +276,32 @@ class AccessorTest extends TestCase
         self::assertFalse($this->propertyAccessor->isReadable(new TestClassMagicGet('Bernhard'), '/throwing'));
     }
 
-    /**
-     * @dataProvider getPathsWithUnexpectedType
-     */
+    #[DataProvider("getPathsWithUnexpectedType")]
     public function testIsReadableReturnsFalseIfNotObjectOrArray($objectOrArray, string $path): void
     {
         self::assertFalse($this->propertyAccessor->isReadable($objectOrArray, $path));
     }
 
-    /**
-     * @dataProvider getValidPropertyPaths
-     */
-    public function testIsWritable($objectOrArray, string $path): void
+    #[DataProvider("getValidPropertyPaths")]
+    public function testIsWritable($objectOrArray, string $path, $_value): void
     {
         self::assertTrue($this->propertyAccessor->isWritable($objectOrArray, $path));
     }
 
-    /**
-     * @dataProvider getUnreachablePaths
-     */
+    #[DataProvider("getUnreachablePaths")]
     public function testIsWritableReturnsFalseIfPropertyNotFound($objectOrArray, string $path): void
     {
         self::assertFalse($this->propertyAccessor->isWritable($objectOrArray, $path));
     }
 
-    /**
-     * @dataProvider getPathsWithMissingIndex
-     */
+    #[DataProvider("getPathsWithMissingIndex")]
     public function testIsWritableReturnsTrueIfIndexNotFound($objectOrArray, string $path): void
     {
         // Non-existing indices can be written. Arrays are created on-demand.
         self::assertTrue($this->propertyAccessor->isWritable($objectOrArray, $path));
     }
 
-    /**
-     * @dataProvider getPathsWithMissingIndex
-     */
+    #[DataProvider("getPathsWithMissingIndex")]
     public function testIsWritableReturnsTrueIfIndexNotFoundAndIndexExceptionsEnabled($objectOrArray, string $path): void
     {
         $this->propertyAccessor = new Accessor();
@@ -349,15 +315,13 @@ class AccessorTest extends TestCase
         self::assertTrue($this->propertyAccessor->isWritable(new TestClassMagicGet('Bernhard'), '/magicProperty'));
     }
 
-    /**
-     * @dataProvider getPathsWithUnexpectedType
-     */
+    #[DataProvider("getPathsWithUnexpectedType")]
     public function testIsWritableReturnsFalseIfNotObjectOrArray($objectOrArray, string $path): void
     {
         self::assertFalse($this->propertyAccessor->isWritable($objectOrArray, $path));
     }
 
-    public function getValidPropertyPaths(): iterable
+    public static function getValidPropertyPaths(): iterable
     {
         return [
             [['Bernhard', 'Schussek'], '/0', 'Bernhard'],
@@ -423,7 +387,7 @@ class AccessorTest extends TestCase
         self::assertSame('Updated', $obj->publicProperty['foo']['bar']);
     }
 
-    public function getReferenceChainObjectsForSetValue(): iterable
+    public static function getReferenceChainObjectsForSetValue(): iterable
     {
         return [
             [['a' => ['b' => ['c' => 'old-value']]], '/a/b/c', 'new-value'],
@@ -434,9 +398,7 @@ class AccessorTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getReferenceChainObjectsForSetValue
-     */
+    #[DataProvider("getReferenceChainObjectsForSetValue")]
     public function testSetValueForReferenceChainIssue($object, string $path, $value): void
     {
         $this->propertyAccessor->setValue($object, $path, $value);
@@ -444,7 +406,7 @@ class AccessorTest extends TestCase
         self::assertEquals($value, $this->propertyAccessor->getValue($object, $path));
     }
 
-    public function getReferenceChainObjectsForIsWritable(): iterable
+    public static function getReferenceChainObjectsForIsWritable(): iterable
     {
         return [
             [new TestClassIsWritable(['a' => ['b' => 'old-value']]), '/value/a/b', true],
@@ -453,15 +415,13 @@ class AccessorTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getReferenceChainObjectsForIsWritable
-     */
+    #[DataProvider("getReferenceChainObjectsForIsWritable")]
     public function testIsWritableForReferenceChainIssue($object, string $path, $value): void
     {
         self::assertEquals($value, $this->propertyAccessor->isWritable($object, $path));
     }
 
-    public function getCamelizedReadValue(): iterable
+    public static function getCamelizedReadValue(): iterable
     {
         return [
             [new CamelizedPropertyClass('value'), '/camelized_property_value', 'value'],
@@ -473,15 +433,13 @@ class AccessorTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getCamelizedReadValue
-     */
+    #[DataProvider("getCamelizedReadValue")]
     public function testShouldReadFromCamelizedProperty($object, string $path, $value): void
     {
         self::assertEquals($value, $this->propertyAccessor->getValue($object, $path));
     }
 
-    public function getCamelizedWriteValue(): iterable
+    public static function getCamelizedWriteValue(): iterable
     {
         return [
             [new CamelizedPropertyClass('old_value'), '/camelized_property_value', 'value'],
@@ -493,9 +451,7 @@ class AccessorTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getCamelizedWriteValue
-     */
+    #[DataProvider("getCamelizedWriteValue")]
     public function testShouldWriteIntoCamelizedProperty($object, string $path, $value): void
     {
         $this->propertyAccessor->setValue($object, $path, $value);
@@ -570,7 +526,7 @@ class AccessorTest extends TestCase
         self::assertEquals(['bar', 'foofoo'], $array['value']['foo']->getArrayCopy());
     }
 
-    public function getUnappendableObjects(): iterable
+    public static function getUnappendableObjects(): iterable
     {
         yield [['value' => ['foo' => (object) ['bar']]]];
         yield [['value' => (object) ['foo' => (object) ['bar']]]];
@@ -578,9 +534,7 @@ class AccessorTest extends TestCase
         yield [(object) ['value' => ['foo' => (object) ['bar']]]];
     }
 
-    /**
-     * @dataProvider getUnappendableObjects
-     */
+    #[DataProvider("getUnappendableObjects")]
     public function testArrayAppendThrowsIfAdderIsNotFound($array): void
     {
         $this->expectException(InvalidArgumentException::class);

@@ -4,6 +4,9 @@ namespace Solido\PatchManager\Tests;
 
 use Nyholm\Psr7\ServerRequest;
 use Prophecy\PhpUnit\ProphecyTrait;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
+use PHPUnit\Framework\TestCase;
 use Solido\DataMapper\DataMapperInterface;
 use Solido\DataMapper\Exception\MappingErrorException;
 use Solido\DataMapper\MappingResultInterface;
@@ -14,7 +17,6 @@ use Solido\PatchManager\MergePatchableInterface;
 use Solido\PatchManager\PatchableInterface;
 use Solido\PatchManager\PatchManager;
 use Solido\PatchManager\PatchManagerInterface;
-use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Cache\CacheItemPoolInterface;
@@ -71,16 +73,14 @@ class PatchManagerTest extends TestCase
         $this->patchManager->patch(new \stdClass(), $this->prophesize(Request::class)->reveal());
     }
 
-    public function provideMergePatchContentType(): iterable
+    public static function provideMergePatchContentType(): iterable
     {
         yield [ 'application/merge-patch+json' ];
         yield [ 'application/merge-patch+xml' ];
         yield [ 'application/merge-patch+x-www-form-urlencoded' ];
     }
 
-    /**
-     * @dataProvider provideMergePatchContentType
-     */
+    #[DataProvider("provideMergePatchContentType")]
     public function testPatchShouldOperateMergePatchIfContentTypeIsCorrect(string $contentType): void
     {
         $request = $this->prophesize(Request::class);
@@ -130,7 +130,7 @@ class PatchManagerTest extends TestCase
         $this->patchManager->patch($patchable->reveal(), $request->reveal());
     }
 
-    public function getInvalidJson(): iterable
+    public static function getInvalidJson(): iterable
     {
         yield [[]];
         yield [[
@@ -138,9 +138,7 @@ class PatchManagerTest extends TestCase
         ]];
     }
 
-    /**
-     * @dataProvider getInvalidJson
-     */
+    #[DataProvider("getInvalidJson")]
     public function testPatchShouldThrowIfDocumentIsInvalid(array $params): void
     {
         $this->expectException(InvalidJSONException::class);
@@ -155,7 +153,7 @@ class PatchManagerTest extends TestCase
         $this->patchManager->patch($patchable->reveal(), $request->reveal());
     }
 
-    public function getInvalidJsonAndObject(): iterable
+    public static function getInvalidJsonAndObject(): iterable
     {
         yield [
             [
@@ -184,9 +182,7 @@ class PatchManagerTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider getInvalidJsonAndObject
-     */
+    #[DataProvider("getInvalidJsonAndObject")]
     public function testPatchShouldThrowIfOperationErrored(array $params, $object): void
     {
         $this->expectException(InvalidJSONException::class);
@@ -281,9 +277,7 @@ class PatchManagerTest extends TestCase
         $this->patchManager->patch($object->reveal(), $request->reveal());
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
+    #[DoesNotPerformAssertions]
     public function testPatchShouldNotThrowOnObjectInvalidForNonPatchedProperty(): void
     {
         $object = $this->prophesize(PatchableInterface::class);

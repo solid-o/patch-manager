@@ -23,6 +23,7 @@ use function strpos;
 use function substr;
 use function urldecode;
 
+/** @implements IteratorAggregate<int, string> */
 class Path implements IteratorAggregate, PropertyPathInterface
 {
     private int $length;
@@ -72,7 +73,7 @@ class Path implements IteratorAggregate, PropertyPathInterface
      */
     public function getElements(): array
     {
-        return $this->parts;
+        return array_values($this->parts);
     }
 
     /**

@@ -13,4 +13,9 @@ class AccessorTraversableArrayObjectTest extends AccessorCollectionTest
     {
         return new TraversableArrayObject($array);
     }
+
+    protected static function createContainer(array $array)
+    {
+        return new TraversableArrayObject($array);
+    }
 }

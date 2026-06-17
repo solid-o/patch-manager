@@ -2,16 +2,15 @@
 
 namespace Solido\PatchManager\Tests\JSONPointer;
 
-use Solido\PatchManager\JSONPointer\Path;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Solido\PatchManager\JSONPointer\Path;
 use Symfony\Component\PropertyAccess\Exception\InvalidPropertyPathException;
 use Symfony\Component\PropertyAccess\Exception\OutOfBoundsException;
 
 class PathTest extends TestCase
 {
-    /**
-     * @dataProvider providePath
-     */
+    #[DataProvider("providePath")]
     public function testPathShouldBeCleanedUp(string $expected, string $path): void
     {
         $path = new Path($path);
@@ -19,7 +18,7 @@ class PathTest extends TestCase
         self::assertEquals($expected, $path->getPath());
     }
 
-    public function providePath(): iterable
+    public static function providePath(): iterable
     {
         yield ['/foo', '/foo'];
         yield ['/foo/0', '/foo/0'];
@@ -46,16 +45,14 @@ class PathTest extends TestCase
         yield ['/m~0n', '#/m~0n'];
     }
 
-    public function provideInvalidPath(): iterable
+    public static function provideInvalidPath(): iterable
     {
         yield ['##foo'];
         yield ['bar'];
         yield ['/foo~2'];
     }
 
-    /**
-     * @dataProvider provideInvalidPath
-     */
+    #[DataProvider("provideInvalidPath")]
     public function testPathShouldThrowOnInvalidPaths(string $value): void
     {
         $this->expectException(InvalidPropertyPathException::class);

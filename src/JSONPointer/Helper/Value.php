@@ -9,16 +9,12 @@ use ArrayAccess;
 use function is_array;
 use function is_object;
 
-/**
- * @template T
- * @property T|null $reference
- */
 class Value
 {
-    /** @var T */
+    /** @var mixed */
     public $value;
 
-    /** @var T|null */
+    /** @var mixed|null */
     public $reference;
 
     public bool|null $isRefChained;

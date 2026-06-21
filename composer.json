@@ -46,7 +46,7 @@
         "phpspec/prophecy-phpunit": "^2.0",
         "phpunit/phpunit": "^11.0 || ^12.0",
         "roave/security-advisories": "dev-master",
-        "solido/data-transformers": "^0.4 || ^0.5@dev",
+        "solido/data-transformers": "^0.4 || ^0.5",
         "solido/php-coding-standards": "dev-master",
         "symfony/form": "^7.4 || ^8.0"
     },
